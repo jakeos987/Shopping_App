@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn,Column,OneToMany} from 'typeorm';
 import { OrderItem } from '../../orders/entities/orderItem.entity';
+import { CartItem } from '../../cart/entities/cartItem.entity';
 
 export enum ProductCategory{
     electronics="ELECTRONICS",
@@ -34,4 +35,7 @@ export class Product {
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order)
     orderItems:OrderItem[]
+
+    @OneToMany(()=>CartItem,(cartitem)=>cartitem.product)
+    cartItems:CartItem[]
 }

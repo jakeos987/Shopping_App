@@ -13,7 +13,7 @@ import { OrderItem } from './orders/entities/orderItem.entity';
 import { CartModule } from './cart/cart.module';
 
 @Module({
-  imports: [ UsersModule,OrdersModule,ProductModule,ConfigModule.forRoot({
+  imports: [ UsersModule,OrdersModule,CartModule,ProductModule,ConfigModule.forRoot({
     isGlobal:true,
   }),
 TypeOrmModule.forRootAsync({
@@ -30,7 +30,7 @@ useFactory:(configService:ConfigService)=>({
   synchronize:true,
   }),
 }),
-CartModule,
+
 ],
   controllers: [AppController],
   providers: [AppService],
