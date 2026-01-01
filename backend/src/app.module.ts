@@ -11,6 +11,8 @@ import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
 import { OrderItem } from './orders/entities/orderItem.entity';
 import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/entities/cart.entity';
+import { CartItem } from './cart/entities/cartItem.entity';
 
 @Module({
   imports: [ UsersModule,OrdersModule,CartModule,ProductModule,ConfigModule.forRoot({
@@ -26,7 +28,7 @@ useFactory:(configService:ConfigService)=>({
   username:configService.get<string>('DB_USERNAME'),
   password:configService.get<string>('DB_PASSWORD'),
   database:configService.get<string>('DB_DATABASE'),
-  entities:[User,Order,Product,OrderItem],
+  entities:[User,Order,Product,OrderItem,Cart,CartItem],
   synchronize:true,
   }),
 }),

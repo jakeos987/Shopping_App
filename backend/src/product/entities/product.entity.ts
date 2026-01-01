@@ -13,29 +13,29 @@ export enum ProductCategory{
 @Entity('Products')
 export class Product {
     @PrimaryGeneratedColumn()
-    productId:number
+    productId:number;
 
     @Column()
-    name:string
+    name:string;
 
     @Column()
-    category:ProductCategory
+    category:ProductCategory;
 
     @Column()
-    price:number
+    price:number;
 
     @Column()
-    stockQuantity:number
+    stockQuantity:number;
 
     @Column()
-    imageUrl:string
+    imageUrl:string;
 
     @Column()
-    isActive:boolean
+    isActive:boolean;
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order)
-    orderItems:OrderItem[]
+    orderItems:OrderItem[];
 
     @OneToMany(()=>CartItem,(cartitem)=>cartitem.product)
-    cartItems:CartItem[]
+    cartItems:CartItem[];
 }
