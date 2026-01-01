@@ -7,9 +7,12 @@ import {TypeOrmModule} from '@nestjs/Typeorm';
 import {User} from './users/entities/user.entity';
 import { OrdersModule } from './orders/orders.module';
 import {Order } from './orders/entities/order.entity'
+import { ProductModule } from './product/product.module';
+import { Product } from './product/entities/product.entity';
+import { OrderItem } from './orders/entities/orderItem.entity';
 
 @Module({
-  imports: [ UsersModule,OrdersModule,ConfigModule.forRoot({
+  imports: [ UsersModule,OrdersModule,ProductModule,ConfigModule.forRoot({
     isGlobal:true,
   }),
 TypeOrmModule.forRootAsync({
@@ -21,13 +24,12 @@ useFactory:(configService:ConfigService)=>({
   port:configService.get<number>('DB_PORT'),
   username:configService.get<string>('DB_USERNAME'),
   password:configService.get<string>('DB_PASSWORD'),
-  database:configService.get<string>('DB_DATABACE'),
-  entities:[User,Order],
+  database:configService.get<string>('DB_DATABASE'),
+  entities:[User,Order,Product,OrderItem],
   synchronize:true,
   }),
 }),
-OrdersModule,
-  ],
+],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,4 +1,5 @@
 import { User } from 'src/users/entities/user.entity'
+import { OrderItem } from './orderItem.entity'
 import { Entity,PrimaryGeneratedColumn,JoinTable,Column,ManyToOne,OneToMany,CreateDateColumn } from 'typeorm'
 
 enum OrderStatus{
@@ -11,7 +12,6 @@ enum OrderStatus{
 export class Order{
     @PrimaryGeneratedColumn()
     orderId:number
-
 
     @CreateDateColumn()
     orderDate:Date
