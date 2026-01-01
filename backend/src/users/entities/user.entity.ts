@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn,DeleteDateColumn} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn} from "typeorm";
+import {Order} from '../../orders/entities/order.entity'
 
 export enum Role{
     admin="ADMIN",
@@ -31,6 +32,11 @@ export class User {
 
     @CreateDateColumn()
     createdAt:Date
+    
+    @OneToMany(()=>Order,(order)=>order.assignedTo)
+    orders:Order[]
+
+    
     
     // @DeleteDateColumn()
     // deletedAt:Date | null

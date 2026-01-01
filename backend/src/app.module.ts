@@ -5,9 +5,11 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import {TypeOrmModule} from '@nestjs/Typeorm';
 import {User} from './users/entities/user.entity';
+import { OrdersModule } from './orders/orders.module';
+import {Order } from './orders/entities/order.entity'
 
 @Module({
-  imports: [ UsersModule,ConfigModule.forRoot({
+  imports: [ UsersModule,OrdersModule,ConfigModule.forRoot({
     isGlobal:true,
   }),
 TypeOrmModule.forRootAsync({
@@ -20,10 +22,11 @@ useFactory:(configService:ConfigService)=>({
   username:configService.get<string>('DB_USERNAME'),
   password:configService.get<string>('DB_PASSWORD'),
   database:configService.get<string>('DB_DATABACE'),
-  entities:[User],
+  entities:[User,Order],
   synchronize:true,
   }),
 }),
+OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
