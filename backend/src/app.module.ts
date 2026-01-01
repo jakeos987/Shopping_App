@@ -10,6 +10,7 @@ import {Order } from './orders/entities/order.entity'
 import { ProductModule } from './product/product.module';
 import { Product } from './product/entities/product.entity';
 import { OrderItem } from './orders/entities/orderItem.entity';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [ UsersModule,OrdersModule,ProductModule,ConfigModule.forRoot({
@@ -29,6 +30,7 @@ useFactory:(configService:ConfigService)=>({
   synchronize:true,
   }),
 }),
+CartModule,
 ],
   controllers: [AppController],
   providers: [AppService],

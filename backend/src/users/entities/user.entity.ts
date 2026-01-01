@@ -1,5 +1,6 @@
 import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn} from "typeorm";
-import {Order} from '../../orders/entities/order.entity'
+import {Order} from '../../orders/entities/order.entity';
+import { Cart } from '../../cart/entities/cart.entity';
 
 export enum Role{
     admin="ADMIN",
@@ -36,8 +37,6 @@ export class User {
     @OneToMany(()=>Order,(order)=>order.assignedTo)
     orders:Order[]
 
-    
-    
-    // @DeleteDateColumn()
-    // deletedAt:Date | null
+    @OneToMany(()=>Cart,(cart)=>cart.assignedTo)
+    carts:Cart[]
 }

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn,Column,OneToMany} from 'typeorm';
 import { OrderItem } from '../../orders/entities/orderItem.entity';
 
-enum ProductCategory{
+export enum ProductCategory{
     electronics="ELECTRONICS",
     clothing="CLOTHNG",
     books="BOOKS",
@@ -26,8 +26,10 @@ export class Product {
     @Column()
     stockQuantity:number
 
+    @Column()
     imageUrl:string
 
+    @Column()
     isActive:boolean
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order)
