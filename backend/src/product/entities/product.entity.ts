@@ -24,13 +24,13 @@ export class Product {
     @Column()
     price:number;
 
-    @Column()
+    @Column({default:1})
     stockQuantity:number;
 
     @Column()
     imageUrl:string;
 
-    @Column()
+    @Column('boolean',{default:false})
     isActive:boolean;
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order)
