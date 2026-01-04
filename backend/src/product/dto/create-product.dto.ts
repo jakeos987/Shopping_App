@@ -1,4 +1,6 @@
-import { IsNotEmpty,IsString,IsOptional,IsNumber,IsBoolean} from 'class-validator'
+import { IsNotEmpty,IsString,IsOptional,IsNumber,IsBoolean,maxLength,minLength } from 'class-validator'
+import { ProductCategory } from '../entities/product.entity';
+
 export class CreateProductDto {
     @IsNotEmpty()
     @IsString()
@@ -10,7 +12,7 @@ export class CreateProductDto {
 
     @IsString()
     @IsNotEmpty()
-    category:string
+    category:ProductCategory
 
     @IsNumber()
     @IsNotEmpty()
