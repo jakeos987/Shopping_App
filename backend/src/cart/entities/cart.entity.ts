@@ -11,7 +11,7 @@ export class Cart {
     @CreateDateColumn()
     createdAt:Date
 
-    @ManyToOne(()=>User,(user)=>user.id)
+    @ManyToOne(()=>User,(user)=>user.carts)
     assignedTo:User
 
     @OneToMany(()=>CartItem,(cartItem)=>cartItem.cart)

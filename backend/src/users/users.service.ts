@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {User} from './entities/user.entity'
-import { InjectRepository } from '@nestjs/Typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { NotFoundException} from '@nestjs/common'
 import * as bcrypt from 'bcrypt';
@@ -15,11 +15,11 @@ export class UsersService {
   ){}
   async create(createUserDto: CreateUserDto) {
     const salt = await bcrypt.genSalt()
-    createUserDto.password = bcrypt.hashSync(createUserDto.password,salt)
-    const newUser = this.userRepo.create({
+    createUserDto.password = await bcrypt.hashSync(createUserDto.password,salt)
+    const newUser = await this.userRepo.create({
       ...createUserDto
     })
-    return this.userRepo.save(newUser);
+    return await this.userRepo.save(newUser);
   }
 
   async findAll() {

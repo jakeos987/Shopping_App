@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,UnauthorizedException,Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto'
 import { UsersService } from '../users/users.service'
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,12 +17,14 @@ export class AuthController {
  async register(@Body()UserDto:CreateUserDto){
   return this.userService.create(UserDto)
  }
+ @UseGuards(LocalAuthGuard)
  @Post('login')
- async login(@Body()Body){
-  const user = await this.authService.validateUser(Body.email,Body.password)
-  if(!user){
-    throw new UnauthorizedException('invalid credentialls')
-  }
-  return this.authService.login(user)
+ async login(@Body()loginDto:LoginDto,@Request()req){
+  return this.authService.login(req.user)
+ }
+ @UseGuards(JwtAuthGuard)
+ @Get('profile')
+ getProfile(@Request()req){
+  return req.user
  }
 }
