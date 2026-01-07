@@ -4,7 +4,7 @@ import { CartItem } from '../../cart/entities/cartItem.entity';
 
 export enum ProductCategory{
     electronics="ELECTRONICS",
-    clothing="CLOTHNG",
+    clothing="CLOTHING",
     books="BOOKS",
     boardGames="BOARD_GAMES",
     bevrages="BEVRAGES",
@@ -33,7 +33,7 @@ export class Product {
     @Column('boolean',{default:false})
     isActive:boolean;
 
-    @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order)
+    @OneToMany(()=>OrderItem,(orderItem)=>orderItem.product)
     orderItems:OrderItem[];
 
     @OneToMany(()=>CartItem,(cartitem)=>cartitem.product)

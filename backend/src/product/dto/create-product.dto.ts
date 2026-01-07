@@ -1,4 +1,4 @@
-import { IsNotEmpty,IsString,IsOptional,IsNumber,IsBoolean,maxLength,minLength } from 'class-validator'
+import { IsNotEmpty,IsString,IsOptional,IsNumber,Min,IsEnum,IsBoolean,maxLength,minLength } from 'class-validator'
 import { ProductCategory } from '../entities/product.entity';
 
 export class CreateProductDto {
@@ -10,19 +10,17 @@ export class CreateProductDto {
     @IsOptional()
     description:string|null
 
-    @IsString()
-    @IsNotEmpty()
+    @IsEnum(ProductCategory)
     category:ProductCategory
 
     @IsNumber()
-    @IsNotEmpty()
+    @Min(0)
     price:number
 
     @IsNumber()
-    @IsNotEmpty()
+    @Min(0)
     stock:number
     
-    @IsNotEmpty()
     @IsString()
     imageUrl:string
 

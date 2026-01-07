@@ -12,25 +12,12 @@ constructor(
   private readonly productRepo:Repository<Product>
 ){}
 
-  create(createProduct: CreateProductDto) {
+ async create(createProduct: CreateProductDto) {
     const product = this.productRepo.create(createProduct)
-    this.productRepo.save(product)
-    return `addeed ${product.productId}`;
+    return this.productRepo.save(product) 
   }
-
-  findAll() {
-    return `This action returns all product`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
-  }
-
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
+async findAll(){
+  return this.productRepo.find()
+}
+ 
 }
