@@ -19,11 +19,13 @@ export class CreateProductDto {
 
     @IsNumber()
     @Min(0)
-    stock:number
+    stockQuantity:number
     
     @IsString()
+    @IsOptional()
     imageUrl:string
 
     @IsBoolean()
-    IsActive:boolean
+    @IsOptional()
+    IsActive:boolean|null
 }

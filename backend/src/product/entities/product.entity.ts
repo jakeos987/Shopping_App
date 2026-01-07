@@ -7,7 +7,7 @@ export enum ProductCategory{
     clothing="CLOTHING",
     books="BOOKS",
     boardGames="BOARD_GAMES",
-    bevrages="BEVRAGES",
+    beverages="BEVERAGES",
 }
 
 @Entity('Products')
@@ -21,7 +21,7 @@ export class Product {
     @Column()
     category:ProductCategory;
 
-    @Column()
+    @Column('decimal',{precision:11,scale:2})
     price:number;
 
     @Column({default:1})
