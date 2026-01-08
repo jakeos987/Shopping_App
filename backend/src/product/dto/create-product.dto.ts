@@ -28,4 +28,7 @@ export class CreateProductDto {
     @IsBoolean()
     @IsOptional()
     IsActive:boolean|null
+
+    @IsBoolean()
+    IsDeleted:boolean = false
 }

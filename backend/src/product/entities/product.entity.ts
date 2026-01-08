@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn,Column,OneToMany} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn,Column,OneToMany,DeleteDateColumn} from 'typeorm';
 import { OrderItem } from '../../orders/entities/orderItem.entity';
 import { CartItem } from '../../cart/entities/cartItem.entity';
 
@@ -32,6 +32,9 @@ export class Product {
 
     @Column('boolean',{default:false})
     isActive:boolean;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.product)
     orderItems:OrderItem[];

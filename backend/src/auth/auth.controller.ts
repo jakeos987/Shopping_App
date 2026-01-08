@@ -27,4 +27,8 @@ export class AuthController {
  getProfile(@Request()req){
   return req.user
  }
+ @Post('logout')
+ async logout(@Request()rec){
+    return {message:'Logged out successfully'}
+ }
 }
