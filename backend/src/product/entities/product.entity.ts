@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn,Column,OneToMany,DeleteDateColumn} from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { OrderItem } from '../../orders/entities/orderItem.entity';
 import { CartItem } from '../../cart/entities/cartItem.entity';
 
@@ -25,6 +26,7 @@ export class Product {
     price:number;
 
     @Column({default:1})
+    @Exclude()
     stockQuantity:number;
 
     @Column()

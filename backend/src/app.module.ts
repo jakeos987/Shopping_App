@@ -18,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [ UsersModule,OrdersModule,CartModule,ProductModule,ConfigModule.forRoot({
     isGlobal:true,
+    
   }),
 TypeOrmModule.forRootAsync({
 imports:[ConfigModule],

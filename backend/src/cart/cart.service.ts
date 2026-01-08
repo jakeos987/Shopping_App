@@ -24,7 +24,7 @@ export class CartService {
     let cart = await this.cartRepo.findOne({
       where:{ assignedTo:{id:userId}},
         relations:['cartItems', 'cartItems.product'],
-        // withDeleted:true
+        withDeleted:true
     })
     if(!cart){
       cart = this.cartRepo.create({
