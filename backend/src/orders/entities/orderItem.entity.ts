@@ -10,7 +10,7 @@ export class OrderItem {
     @Column()
     quantity:number
 
-    @Column()
+    @Column('decimal',{precision:11,scale:2})
     price:number
 
     @ManyToOne(()=>Order,(order)=>order.orderId)

@@ -9,7 +9,8 @@ import { UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class CartController {
-constructor(private readonly cartService:CartService){}
+    constructor(private readonly cartService:CartService){}
+    
     @Post('add')
     async AddToCart(@Request()req,@Body()addToCartDto:AddToCartDto){
         const userId = await req.user.userId
@@ -21,7 +22,7 @@ constructor(private readonly cartService:CartService){}
     }
     @Get()
     async getMyCart(@Request()req){
-        const userId = req.user.userId
+        const userId = await req.user.userId
         return this.cartService.createOrGetCart(userId)
     }
 }

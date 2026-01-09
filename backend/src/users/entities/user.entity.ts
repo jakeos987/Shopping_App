@@ -1,4 +1,5 @@
 import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn} from "typeorm";
+import { Exclude } from 'class-transformer';
 import {Order} from '../../orders/entities/order.entity';
 import { Cart } from '../../cart/entities/cart.entity';
 
@@ -22,6 +23,7 @@ export class User {
     email:string
 
     @Column()
+    @Exclude()
     password:string
 
     @Column({

@@ -1,11 +1,12 @@
-import { User } from 'src/users/entities/user.entity'
-import { OrderItem } from './orderItem.entity'
+import { User } from '../../users/entities/user.entity';
+import { OrderItem } from './orderItem.entity';
 import { Entity,PrimaryGeneratedColumn,JoinTable,Column,ManyToOne,OneToMany,CreateDateColumn } from 'typeorm'
 
-enum OrderStatus{
+export enum OrderStatus{
     pending="PENDING",
-    inProgrss="IN_PROGRESS",
-    completed="COMPLETED",
+    shipped="SHIPPED",
+    delivered="DELIVERED",
+    cancelled="CANCELLED"
 }
 
 @Entity('Orders')
@@ -16,12 +17,21 @@ export class Order{
     @CreateDateColumn()
     orderDate:Date
 
-    @Column()
+    @Column('decimal',{precision:11,scale:2})
     totalAmount:number
 
-    @Column()
+    @Column({
+        type:"enum",
+        enum:OrderStatus,
+        default:OrderStatus.pending
+    }
+    )
     status:OrderStatus
 
     @ManyToOne(()=>User,(user)=>user.orders)
     assignedTo:User
+
+    @OneToMany(()=>OrderItem,(orderItem)=>orderItem.order,{cascade:true})
+    orderItems:OrderItem[]
+
 }
