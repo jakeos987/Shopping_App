@@ -7,14 +7,18 @@ import { UseInterceptors, ClassSerializerInterceptor  } from '@nestjs/common';
 
 
 @Controller('orders')
-  @UseInterceptors(ClassSerializerInterceptor)
-
+@UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  
   @Post('checkout')
   create(@Request()req){
     return this.ordersService.create(req.user.userId)
+  }
+  @Get()
+  findAll(@Request()req){
+    return this.ordersService.findAll(req.user.userId)
   }
 }

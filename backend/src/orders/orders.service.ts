@@ -53,4 +53,12 @@ async create(userId:number){
   return savedOrder
 
 }
+async findAll(userId:number){
+  return this.OrderRepo.find({
+    where:{
+      assignedTo:{id:userId}},
+      relations:['orderItems','orderItems.product'],
+      order:{orderDate:'DESC'}
+  })
+}
 }
