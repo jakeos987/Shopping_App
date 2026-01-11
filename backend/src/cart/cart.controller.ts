@@ -25,10 +25,13 @@ export class CartController {
         const userId = await req.user.userId
         return this.cartService.createOrGetCart(userId)
     }
+    @Patch('remove')
+    async removeFromCart(@Request()req){
+        const userId = req.user.userId
+        return this.cartService.removrFromCart(
+            userId,
+        req.body.productId,
+        req.body.quantity
+        )
+    }
 }
-
-  
-
-
-  
-

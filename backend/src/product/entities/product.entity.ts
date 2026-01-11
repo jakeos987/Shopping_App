@@ -30,12 +30,15 @@ export class Product {
     stockQuantity:number;
 
     @Column()
+    @Exclude()
     imageUrl:string;
 
+    @Exclude()
     @Column('boolean',{default:false})
     isActive:boolean;
 
     @DeleteDateColumn()
+    @Exclude()
     deletedAt: Date;
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.product)

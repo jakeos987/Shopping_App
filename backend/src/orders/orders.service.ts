@@ -7,11 +7,15 @@ import { Order ,OrderStatus} from './entities/order.entity'
 import { OrderItem } from './entities/orderItem.entity';
 import {Cart} from '../cart/entities/cart.entity';
 import { CartItem } from '../cart/entities/cartItem.entity';
+import { Product } from '../product/entities/product.entity';
 
 
 @Injectable()
 export class OrdersService {
 constructor(
+  @InjectRepository(Product)
+  private readonly productRepo: Repository<Product>,
+
   @InjectRepository(Order)
   private readonly OrderRepo:Repository<Order>,
 
@@ -34,6 +38,13 @@ async create(userId:number){
   const orderItems: OrderItem[]=[]
   let totalAmount = 0
   for(const item of cart.cartItems){
+    const product = item.product
+    if(product.stockQuantity < item.quantity){
+      throw new BadRequestException(`not enough stock for ${product.name}`)
+    }
+    product.stockQuantity -= item.quantity
+    await this.productRepo.save(product)
+
     const orderItem = new OrderItem()
     orderItem.product = item.product
     orderItem.price = item.product.price

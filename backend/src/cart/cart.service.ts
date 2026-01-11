@@ -1,4 +1,4 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable,NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
@@ -54,4 +54,18 @@ async addToCart(userId:number,productId:number,quantity:number){
     return this.cartItemRepo.save(newItem)
   }
 }
+async removrFromCart(userId:number,productId:number,quantityToRemove:number){
+  const cart = await this.createOrGetCart(userId)
+  const existingItem = cart.cartItems.find((item)=>item.product.productId === productId)
+ if(!existingItem){
+  throw new BadRequestException(`Product with ID ${productId} not found in the cart`)
+ }
+ existingItem.quantity -= quantityToRemove
+ 
+ if(existingItem.quantity <= 0){
+  await this.cartItemRepo.remove(existingItem)
+  return {message:`Product with ID ${productId} has been removed from cart`}
+ }
+  return this.cartItemRepo.save(existingItem)
+  }
 }

@@ -6,10 +6,10 @@ import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/orderItem.entity';
 import { Cart } from '../cart/entities/cart.entity';
 import { CartItem } from '../cart/entities/cartItem.entity';
-
+import { Product } from '../product/entities/product.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Order,OrderItem,Cart,CartItem])],
+  imports:[TypeOrmModule.forFeature([Order,OrderItem,Cart,CartItem,Product])],
   controllers: [OrdersController],
   providers: [OrdersService],
 })
