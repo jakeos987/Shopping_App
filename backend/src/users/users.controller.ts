@@ -7,7 +7,7 @@ import { Role } from './entities/user.entity';
 import { Roles } from '../auth/roles/roles.decorator';
 
 @Controller('users')
-@Roles(Role.admin)
+// @Roles(Role.admin)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

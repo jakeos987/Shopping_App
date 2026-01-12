@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { CartItem } from 'src/cart/entities/cartItem.entity';
+import { ProductCategory } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
@@ -18,12 +19,32 @@ constructor(
 ){}
 
  async create(createProduct: CreateProductDto) {
-    const product = this.productRepo.create(createProduct)
-    return this.productRepo.save(product) 
+    const exitingProduct = await this.productRepo.findOne({
+      where:{
+        name:createProduct.name,
+    }})
+    if(exitingProduct){
+      exitingProduct.stockQuantity += createProduct.stockQuantity
+      return this.productRepo.save(exitingProduct) 
+      
+    }const newProduct = this.productRepo.create(createProduct)
+    return this.productRepo.save(newProduct)
+    
   }
 async findAll(){
   return this.productRepo.find()
 }
+async findOneByNameOrCategoryOrId(name?:string,category?:ProductCategory,id?:number){
+  const product = await this.productRepo.find({
+    where:[
+      {name},
+      {category},
+      {productId:id}
+    ]
+  })
+  return product
+}
+
 async update(id:number,updateProductDto:UpdateProductDto){
   const product = await this.productRepo.findOneBy({productId:id})
   if(!product){

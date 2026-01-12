@@ -9,6 +9,7 @@ export enum ProductCategory{
     books="BOOKS",
     boardGames="BOARD_GAMES",
     beverages="BEVERAGES",
+    gaming = "GAMING"
 }
 
 @Entity('Products')

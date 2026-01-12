@@ -1,18 +1,17 @@
-import { Injectable ,BadRequestException ,NotFoundException } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable ,BadRequestException ,NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository, } from '@nestjs/typeorm';
 import {Repository } from 'typeorm';
 import { Order ,OrderStatus} from './entities/order.entity'
 import { OrderItem } from './entities/orderItem.entity';
 import {Cart} from '../cart/entities/cart.entity';
 import { CartItem } from '../cart/entities/cartItem.entity';
 import { Product } from '../product/entities/product.entity';
-
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
 constructor(
+  private readonly dataSource: DataSource,
   @InjectRepository(Product)
   private readonly productRepo: Repository<Product>,
 
@@ -27,7 +26,11 @@ constructor(
 
 ){}
 async create(userId:number){
-  const cart = await this.cartRepo.findOne({
+  const queryRunner = this.dataSource.createQueryRunner()
+  await queryRunner.connect()
+  await queryRunner.startTransaction()
+  try{
+    const cart = await this.cartRepo.findOne({
     where:{
       assignedTo:{id:userId}},
       relations:['cartItems', 'cartItems.product']
@@ -42,8 +45,8 @@ async create(userId:number){
     if(product.stockQuantity < item.quantity){
       throw new BadRequestException(`not enough stock for ${product.name}`)
     }
-    product.stockQuantity -= item.quantity
-    await this.productRepo.save(product)
+     product.stockQuantity -= item.quantity
+    await queryRunner.manager.save(product)
 
     const orderItem = new OrderItem()
     orderItem.product = item.product
@@ -59,10 +62,18 @@ async create(userId:number){
     totalAmount: totalAmount,
     orderItems: orderItems
   })
-  const savedOrder = await this.OrderRepo.save(order)
-  await this.cartItemRepo.delete({cart:{cartId:cart.cartId}})
+  const savedOrder = await queryRunner.manager.save(order)
+  await queryRunner.manager.delete(CartItem,{cart:{cartId:cart.cartId}})
+
+  await queryRunner.commitTransaction()
   return savedOrder
 
+  }catch(err){
+    await queryRunner.rollbackTransaction()
+    throw err
+  }finally{
+    await queryRunner.release()
+  }
 }
 async findAll(userId:number){
   return this.OrderRepo.find({
@@ -72,4 +83,5 @@ async findAll(userId:number){
       order:{orderDate:'DESC'}
   })
 }
+
 }
