@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -8,6 +8,7 @@ import { ProductCategory } from './entities/product.entity';
 import { Role } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator'
+import { ProductFilterDto } from './dto/product-filter.dto';
 
 
 @Controller('product')
@@ -33,8 +34,16 @@ export class ProductController {
   @Query('name')name?:string,
   @Query('category')category?:ProductCategory,
   @Query('id')id?:number) {
-    return this.productService.findOneByNameOrCategoryOrId(name,category,id)
+    return this.productService.findByNameOrCategoryOrId(name,category,id)
   }
+
+  @Get('filter')
+  @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
+  async filter(@Query()filterDto: ProductFilterDto){
+    return this.productService.findWithFilter(filterDto)
+  }
+
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Patch(':id')
@@ -51,7 +60,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Patch('restore/:id')
-  restore(@Param('id')id:string){
-    return this.productService.restore(+id)
+  restore(@Param('id')id:number){
+    return this.productService.restore(id)
   }
 }
