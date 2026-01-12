@@ -61,4 +61,11 @@ async remove(id:number){
   await this.cartItemRepo.delete({product:{productId:id}})
   return {message:`Product with ID ${id} deleted successfully`}
 }
+async restore(id:number){
+  const result = await this.productRepo.restore(id)
+  if(result.affected === 0){
+    throw new NotFoundException(`product with ID ${id} not found`)
+  }
+  return this.productRepo.findOne({where:{productId:id}})
+}
 }

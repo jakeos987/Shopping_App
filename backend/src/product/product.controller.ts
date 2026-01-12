@@ -35,15 +35,23 @@ export class ProductController {
   @Query('id')id?:number) {
     return this.productService.findOneByNameOrCategoryOrId(name,category,id)
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
-  // @UseGuards(JwtAuthGuard,Roles(Role.admin))
   
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
+  }
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
+  @Patch('restore/:id')
+  restore(@Param('id')id:string){
+    return this.productService.restore(+id)
   }
 }
