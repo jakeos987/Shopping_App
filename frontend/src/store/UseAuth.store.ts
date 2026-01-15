@@ -16,7 +16,7 @@ export const useAuthStore = create<AuthState>()(
                 token:null,
                 setAuth:(user,token)=> set(
                     {user,token},
-                    false,
+                    false,// הוא היה שומר רק את היוזר והטוקן החדשים וזורק את כל הדברים האחרים שנשמרו TRUE אם היה
                     'setAuth'
                 ),
                 logout:()=> set(
