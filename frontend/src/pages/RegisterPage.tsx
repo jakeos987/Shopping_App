@@ -14,7 +14,6 @@ export default function RegisterPage(){
     const handlerSubmit = async (e:React.FormEvent)=>{
         e.preventDefault()
         setError('')
-    
     if(password !== confirmPassword){
         setError('סיסמאות לא תואמות')
         return

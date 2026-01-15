@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/UseAuth.store';
 import { AuthService } from "../services/auth.service";
+import { Link } from "react-router-dom";
 
 export default function LoginPage(){
     const [email, setEmail]= useState('')
@@ -66,6 +67,11 @@ export default function LoginPage(){
                         התחבר
                         </button>
                         </form>
+                        <div className="mt-3 text-center">
+                            <small>
+                                אין לך חשבון? <Link to="/register"></Link>
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
