@@ -35,6 +35,13 @@ constructor(
 async findAll(){
   return this.productRepo.find()
 }
+async findOne(id:number){
+  const product = await this.productRepo.findOne({where:{productId:id}})
+  if(!product){
+    throw new NotFoundException(`Product with ID ${id} not found`)
+  }
+  return product
+}
 async findByNameOrCategoryOrId(name?:string,category?:ProductCategory,id?:number){
   const whereCondition:any[] = []
   if(name){

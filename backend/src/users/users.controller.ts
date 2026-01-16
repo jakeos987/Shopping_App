@@ -5,9 +5,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, } from './dto/update-user.dto';
 import { Role } from './entities/user.entity';
 import { Roles } from '../auth/roles/roles.decorator';
+import { RolesGuard } from '../auth/roles/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
+
+@UseGuards(JwtAuthGuard,RolesGuard)
+@Roles(Role.admin)
 @Controller('users')
-// @Roles(Role.admin)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

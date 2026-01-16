@@ -9,7 +9,7 @@ import { Role } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator'
 import { ProductFilterDto } from './dto/product-filter.dto';
-
+import { ParseIntPipe } from '@nestjs/common';
 
 @Controller('product')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -28,14 +28,18 @@ export class ProductController {
     return this.productService.findAll();
   }
 
-  
-  @Get('serch')
-  async serch(
-  @Query('name')name?:string,
-  @Query('category')category?:ProductCategory,
-  @Query('id')id?:number) {
-    return this.productService.findByNameOrCategoryOrId(name,category,id)
+  @Get(':id')
+  findOne(@Param('id',ParseIntPipe) id: string) {
+    return this.productService.findOne(+id);
   }
+
+  // @Get('serch')
+  // async serch(
+  // @Query('name')name?:string,
+  // @Query('category')category?:ProductCategory,
+  // @Query('id')id?:number) {
+  //   return this.productService.findByNameOrCategoryOrId(name,category,id)
+  // }
 
   @Get('filter')
   @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
@@ -60,7 +64,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Patch('restore/:id')
-  restore(@Param('id')id:number){
+  restore(@Param('id',ParseIntPipe)id:number){
     return this.productService.restore(id)
   }
 }

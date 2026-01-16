@@ -27,19 +27,19 @@ export class Product {
     price:number;
 
     @Column({default:1})
-    @Exclude()
+    // @Exclude()
     stockQuantity:number;
 
     @Column()
-    @Exclude()
+    // @Exclude()
     imageUrl:string;
 
-    @Exclude()
+    // @Exclude()
     @Column('boolean',{default:false})
     isActive:boolean;
 
     @DeleteDateColumn()
-    @Exclude()
+    // @Exclude()
     deletedAt: Date;
 
     @OneToMany(()=>OrderItem,(orderItem)=>orderItem.product)
