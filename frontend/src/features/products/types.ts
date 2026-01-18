@@ -12,7 +12,7 @@ export interface Product{
     category:ProductCategory
     price:number
     stockQuantity:number
-    imageUrl:string
+    imageUrl?:string
     isActive:boolean
 }
 export interface ProductFilter{

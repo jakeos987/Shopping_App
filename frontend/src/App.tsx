@@ -4,11 +4,13 @@ import  LoginPage  from './pages/LoginPage';
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import { NavBar } from "./pages/NavBar";
 
 function App() {
 
   return (
     <BrowserRouter>
+      <NavBar />
     <Routes>
       <Route path='/login' element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage/>} />

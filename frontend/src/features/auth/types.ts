@@ -1,5 +1,5 @@
 import {type User } from '../user/types'
 export interface AuthResponse{
-    token:string
+    access_token:string
     user:User
 }

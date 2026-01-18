@@ -11,9 +11,11 @@ export interface User{
     orders?:Order[]
     cart?:Cart
 }
-export interface UserRole{
-    role:"USER"|"ADMIN"
-}
+export enum UserRole  {
+  ADMIN = 'ADMIN',
+  USER= 'USER',
+} 
+
 export interface CreateUserDTO{
     email:string
     password:string

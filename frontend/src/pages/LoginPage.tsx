@@ -11,12 +11,14 @@ export default function LoginPage(){
 
     const navigate = useNavigate()
     const setAuth = useAuthStore((state)=> state.setAuth)
+
     const handleSubmit = async (e:React.FormEvent)=>{
         e.preventDefault()
         setError('')
-    
+        console.log("מנסה להתחבר...", { email, password })
         try{
             const data = await AuthService.login({email,password})
+            console.log("התחברות הצליחה, נתונים:", data);
             setAuth(data.user,data.token);
             navigate('/')
         }catch(err:any){
@@ -69,7 +71,7 @@ export default function LoginPage(){
                         </form>
                         <div className="mt-3 text-center">
                             <small>
-                                אין לך חשבון? <Link to="/register"></Link>
+                                <Link to="/register"> ???אין לך חשבון</Link>
                             </small>
                         </div>
                     </div>

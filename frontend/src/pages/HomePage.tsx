@@ -28,7 +28,7 @@ export default function HomePage(){
         <div className="container mt-5">
             <div className="text-center mb-5">
                 <h1> החנות שלנו</h1>
-                {user && <p className="lead">שלום {user.email}</p>}
+                {user && <p className="lead">{user.firstName} שלום</p>}
                 {!user && <p className="text-muted">התחבר כדי לקנות</p>}
             </div>
             {loading && (

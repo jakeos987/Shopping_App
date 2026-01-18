@@ -8,9 +8,12 @@ export default function RegisterPage(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
     const setAuth = useAuthStore((state)=> state.setAuth)
+    
     const handlerSubmit = async (e:React.FormEvent)=>{
         e.preventDefault()
         setError('')
@@ -22,15 +25,19 @@ export default function RegisterPage(){
         setError('הסיסמא חייבת להכיל לפחות 8 תווים')
         return;
     }
+    if(!firstName||!lastName){
+        setError('חובה לשים שם פרטי ומשפחה')
+    }
     try{
-        const data = await AuthService.register({email,password})
+        const data = await AuthService.register({email, password, firstName, lastName})
 
         if (data.token){
             setAuth(data.user,data.token)
             navigate('/')
-        }else{
-            navigate('/login')
         }
+        else{
+            navigate('/login')
+        } 
     }catch(err:any){
         console.log(err)
         setError(err.response.data.message || 'שגיאה בהרשמה תנסה עוד פעם')
@@ -61,6 +68,25 @@ export default function RegisterPage(){
                                     />
                                 </div>
                                 <div className="mb-3">
+                                    <label className="form-label">שם פרטי</label>
+                                    <input type="text"
+                                    className="form-control"
+                                    value={firstName}
+                                    onChange={(e)=>setFirstName(e.target.value)}
+                                    required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                <label className="form-label">שם משפחה</label>
+                                    <input type="text"
+                                    className="form-control"
+                                    value={lastName}
+                                    onChange={(e)=>setLastName(e.target.value)}
+                                    required
+                               />
+
+                                </div>
+                                <div className="mb-3">
                                     <label className="form-label">סיסמא</label>
                                     <input
                                     type="password"
@@ -86,7 +112,7 @@ export default function RegisterPage(){
                             </form>
                             <div className="mt-3 text-center">
                                 <small>
-                                    כבר יש לך חשבון? <Link to="/login"></Link>
+                                    <Link to="/login"> ?יש לך חשבון</Link>
                                 </small>
                             </div>
                         </div>
