@@ -8,4 +8,5 @@ export interface CartItem{
 export interface Cart{
     cartId:number
     cartItems:CartItem[]
+    totalPrice:number
 }

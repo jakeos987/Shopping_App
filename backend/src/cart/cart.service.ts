@@ -7,7 +7,6 @@ import { User } from '../users/entities/user.entity';
 import { Product } from '../product/entities/product.entity';
 
 
-
 @Injectable()
 export class CartService {
   constructor(
@@ -20,11 +19,18 @@ export class CartService {
     @InjectRepository(Product)
     private readonly productRepo:Repository<Product>
   ){}
+  private calculateTotalPrice(cart:Cart):number{
+    if(!cart.cartItems) return 0
+    return cart.cartItems.reduce((total, item)=>{
+      return total +(item.quantity *item.product.price)
+    },0)
+  }
+
+
   async createOrGetCart(userId: number):Promise<Cart>{
     let cart = await this.cartRepo.findOne({
       where:{ assignedTo:{id:userId}},
         relations:['cartItems', 'cartItems.product'],
-        withDeleted:true
     })
     if(!cart){
       cart = this.cartRepo.create({
@@ -33,6 +39,7 @@ export class CartService {
       })
       await this.cartRepo.save(cart)
     }
+    cart.totalPrice=this.calculateTotalPrice(cart)
     return cart
   }
 async addToCart(userId:number,productId:number,quantity:number){
@@ -40,7 +47,7 @@ async addToCart(userId:number,productId:number,quantity:number){
   const existingItem = cart.cartItems.find((item)=>item.product.productId === productId)
   if(existingItem){
     existingItem.quantity += quantity
-    return this.cartItemRepo.save(existingItem)
+    await this.cartItemRepo.save(existingItem)
   }else{
     const product = await this.productRepo.findOneBy({productId})
     if(!product){
@@ -51,21 +58,40 @@ async addToCart(userId:number,productId:number,quantity:number){
       product:product,
       quantity:quantity,
     })
-    return this.cartItemRepo.save(newItem)
+    await this.cartItemRepo.save(newItem)  
   }
+  return this.createOrGetCart(userId)
 }
-async removrFromCart(userId:number,productId:number,quantityToRemove:number){
-  const cart = await this.createOrGetCart(userId)
-  const existingItem = cart.cartItems.find((item)=>item.product.productId === productId)
- if(!existingItem){
-  throw new BadRequestException(`Product with ID ${productId} not found in the cart`)
- }
- existingItem.quantity -= quantityToRemove
- 
- if(existingItem.quantity <= 0){
-  await this.cartItemRepo.remove(existingItem)
-  return {message:`Product with ID ${productId} has been removed from cart`}
- }
-  return this.cartItemRepo.save(existingItem)
+async removeFromCart(userId: number, productId: number, quantityToRemove: number) {
+    
+    const qty = Number(quantityToRemove);
+    const pId = Number(productId);
+
+    const cart = await this.createOrGetCart(userId);
+
+    const existingItem = await this.cartItemRepo.findOne({
+      where: {
+        cart: { cartId: cart.cartId },      
+        product: { productId: pId }  
+      },
+      relations: ['product'] 
+    });
+
+    if (!existingItem) {
+        
+        const allItems = await this.cartItemRepo.find({ 
+            where: { cart: { cartId: cart.cartId } }, 
+            relations: ['product'] 
+        });        
+        throw new BadRequestException(`המוצר לא נמצא בעגלה, נסה לרענן את העמוד`);
+    }    
+    existingItem.quantity -= qty;
+
+    if (existingItem.quantity <= 0) {
+        await this.cartItemRepo.remove(existingItem);
+    } else {
+        await this.cartItemRepo.save(existingItem);
+    }
+    return this.createOrGetCart(userId);
   }
 }

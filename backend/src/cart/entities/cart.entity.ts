@@ -16,4 +16,6 @@ export class Cart {
 
     @OneToMany(()=>CartItem,(cartItem)=>cartItem.cart)
     cartItems:CartItem[]
+
+totalPrice:number
 }

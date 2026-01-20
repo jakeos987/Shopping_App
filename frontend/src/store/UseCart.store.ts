@@ -27,29 +27,39 @@ export const useCartStore = create<CartState>()(
                     set({loading:false}, false, 'fetchCart/error')
                 }
             },
-            addToCart: async (productId:number, quantity:number=1)=>{
-                set({loading:true}, false, 'addToCart/pending')
-                try{
-                    await cartService.addToCart(productId,quantity)
-                    await get().fetchCart()
-                    set({loading:false}, false, 'addToCart/success')
-                }catch(err){
-                    console.error('failed to add to cart',err)
-                    set({loading:false}, false, 'addToCart/error')
-                    throw err
-                }
-            },
-            removeFromCart: async (productId:number, quantity:number)=>{
-                set({loading:true}, false, 'removeFromCart/pending')
-                try{
-                    await cartService.removeFromCart(quantity,productId)
-                    await get().fetchCart()
-                    set({loading:false}, false, 'removeFromCart/success')
-                }catch(err){
-                    console.error('falied to remove from cart', err)
-                    set({loading:false}, false, 'removeFromCart/error')
-                }
-            },
+            addToCart: async (productId: number, quantity: number = 1) => {
+    try {
+        const updatedCart = await cartService.addToCart(productId, quantity);
+        
+        set({ cart: updatedCart }, false, 'addToCart/success');
+    } catch (err) {
+        console.error('failed to add to cart', err);
+    }
+},
+            removeFromCart: async (productId: number, quantity: number) => {
+    const currentCart = get().cart;
+    if (currentCart) {
+        const optimisticItems = currentCart.cartItems.map(item => {
+            if (item.product.productId === productId) {
+                return { ...item, quantity: item.quantity - quantity };
+            }
+            return item;
+        }).filter(item => item.quantity > 0); 
+
+        set({ 
+            cart: { ...currentCart, cartItems: optimisticItems } 
+        }, false, 'removeFromCart/optimistic');
+    }
+
+    try {
+        const serverCart = await cartService.removeFromCart(productId, quantity);
+        
+        set({ cart: serverCart }, false, 'removeFromCart/success');
+    } catch (err) {
+        console.error('failed to remove from cart', err);
+        get().fetchCart(); 
+    }
+},
             clearCart: ()=>{
                 set({cart:null}, false, 'clearCart')
             }

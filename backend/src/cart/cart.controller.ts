@@ -4,7 +4,7 @@ import { AddToCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
-
+import { BadRequestException } from '@nestjs/common';
 @Controller('cart')
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -26,12 +26,17 @@ export class CartController {
         return this.cartService.createOrGetCart(userId)
     }
     @Patch('remove')
-    async removeFromCart(@Request()req){
-        const userId = req.user.userId
-        return this.cartService.removrFromCart(
-            userId,
-        req.body.productId,
-        req.body.quantity
-        )
+  removeFromCart(@Request() req, @Body() body: any) {
+    const productId = Number(body.productId); 
+    const quantity = Number(body.quantityToRemove || body.quantity);
+    if (isNaN(productId) || isNaN(quantity)) {
+        throw new BadRequestException('ID או כמות לא תקינים');
     }
+
+    return this.cartService.removeFromCart(
+        req.user.userId, 
+        productId,
+        quantity   
+    );
+  }
 }

@@ -1,56 +1,71 @@
 import { useEffect, useState } from "react";
 import {type Product } from "../features/products/types";
-import {productService } from '../services/ProductService';
+import { productService } from "../services/ProductService"; 
 import { ProductCard } from "../features/products/components/ProductCard";
-import { useAuthStore } from "../store/UseAuth.store";
 
-export default function HomePage(){
-    const [product, setProduct ] = useState<Product[]>([]);
-    const [loading, setLoading ] = useState(true);
-    const [error, setError ] = useState('')
-    const user = useAuthStore((state)=>state.user)
+export default function HomePage() {
+    const [products, setProducts] = useState<Product[]>([]);
+    
+    const [loading, setLoading] = useState(true);
+    
+    const [error, setError] = useState('');
 
-    useEffect(()=>{
-        const fetchProduct =async ()=>{
-            try{
-                const data =await productService.getAll()
-                setProduct(data)
-            }catch(err){
-                console.error(err)
-                setError('לא הצלחנו לטעון את המוצרים, נסה שוב מאוחר יותר')
-            }finally{
-                setLoading(false)
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await productService.getAll();
+                setProducts(data);
+            } catch (err) {
+                console.error(err);
+                setError('לא הצלחנו לטעון את המוצרים. נסה לרענן את העמוד.');
+            } finally {
+                setLoading(false);
             }
-        }
-        fetchProduct()
-    },[])
-    return(
-        <div className="container mt-5">
+        };
+
+        fetchData();
+    }, []);
+
+    // 3. התצוגה (JSX)
+    return (
+        <div className="container mt-5"> {/* container: מרכז את התוכן ונותן שוליים */}
+            
             <div className="text-center mb-5">
-                <h1> החנות שלנו</h1>
-                {user && <p className="lead">{user.firstName} שלום</p>}
-                {!user && <p className="text-muted">התחבר כדי לקנות</p>}
+                <h1 className="display-4 fw-bold">החנות שלנו</h1>
+                <p className="lead text-muted">כל המוצרים הכי שווים במקום אחד</p>
             </div>
+
+            {/* מצב טעינה - מציג ספינר של בוטסטראפ */}
             {loading && (
-                <div className="text-center">
+                <div className="d-flex justify-content-center my-5">
                     <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">loading...</span>
+                        <span className="visually-hidden">Loading...</span>
                     </div>
                 </div>
             )}
-            {error &&<div className="alert alert-danger text-center">{error}</div>}
+
+            {/* מצב שגיאה - מציג הודעה אדומה */}
+            {error && (
+                <div className="alert alert-danger text-center" role="alert">
+                    {error}
+                </div>
+            )}
+
+            {/* מצב תקין - מציג את המוצרים */}
             {!loading && !error && (
-                <div className="row">
-                    {product.map((product)=>(
-                        <ProductCard key={product.productId} product={product}/>
-                    ))}
-                    {product.length ===0 && (
-                        <div className="text-center w-100">
-                            <h3>אין מוצרים כרגע בחנות</h3>
+                // row: שורה חדשה. g-4: רווח (Gap) בין הכרטיסים
+                <div className="row g-4">
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <ProductCard key={product.productId} product={product} />
+                        ))
+                    ) : (
+                        <div className="text-center">
+                            <h3>אין מוצרים כרגע במלאי 📦</h3>
                         </div>
                     )}
                 </div>
             )}
         </div>
-    )
+    );
 }

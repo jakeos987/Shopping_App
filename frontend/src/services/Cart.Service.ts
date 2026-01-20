@@ -13,12 +13,12 @@ export const cartService ={
         });
         return res.data
     },
-    async removeFromCart(quantity:number,productId:number){
-        const res = await api.post('/cart/remove',{
-            quantity,
-            productId
-    })
-        return res.data
+   async removeFromCart(productId: number, quantity: number) {
+        const res = await api.patch('/cart/remove', {
+            productId: productId,          
+            quantityToRemove: quantity     
+        });
+        return res.data;
     },
 
 }

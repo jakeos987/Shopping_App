@@ -31,7 +31,7 @@ export const NavBar = () => {
         setIsMenuOpen(!isMenuOpen);
     }
 
-    const cartCount = cart?.cartItems.length || 0;
+    const cartCount = cart?.cartItems?.length || 0;
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -49,7 +49,7 @@ export const NavBar = () => {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-        
+
                 <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
                     <ul className="navbar-nav me-auto">
                         <li className="nav-item">
