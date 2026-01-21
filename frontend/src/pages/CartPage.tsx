@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useCartStore } from "../store/UseCart.store";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function CartPage() {
     const { cart, loading, removeFromCart, addToCart, fetchCart } = useCartStore();
     const navigate = useNavigate();
+
     useEffect(() => {
         fetchCart();
     }, []);
+
     const handleQuantityChange = (productId: number, currentQty: number, newQtyStr: string) => {
         const newQty = parseInt(newQtyStr);
         if (isNaN(newQty) || newQty < 1) return; 
@@ -19,7 +21,6 @@ export default function CartPage() {
             removeFromCart(productId, Math.abs(diff)); 
         }
     };
-
     const calculateTotal = () => {
         if (!cart?.cartItems) return 0;
         return cart.cartItems.reduce((total, item) => {
@@ -45,10 +46,13 @@ export default function CartPage() {
             <h2 className="mb-4">העגלה שלי</h2>
             <div className="row g-4">
                 <div className="col-lg-8">
-                    {cart.cartItems.map((item) => (
+                    {cart.cartItems
+                        .sort((a, b) => a.cartItemId - b.cartItemId)
+                        .map((item) => (
                         <div key={item.cartItemId} className="card mb-3 shadow-sm border-0">
                             <div className="card-body p-3">
                                 <div className="d-flex align-items-center justify-content-between">
+                                    
                                     <div className="d-flex align-items-center" style={{ width: '40%' }}>
                                         <img
                                             src={item.product?.imageUrl ? String(item.product.imageUrl) : 'https://via.placeholder.com/60'}
@@ -83,17 +87,19 @@ export default function CartPage() {
                                     <div className="fw-bold" style={{ width: '15%', textAlign: 'end' }}>
                                         ₪{(Number(item.product?.price || 0) * item.quantity).toFixed(2)}
                                     </div>
+
                                     <button 
                                         className="btn btn-link text-danger p-0 ms-3"
                                         onClick={() => removeFromCart(item.product.productId, item.quantity)}
                                     >
-                                        ❌
+                                        🗑️
                                     </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
+
                 <div className="col-lg-4">
                     <div className="card shadow-sm border-0 bg-light">
                         <div className="card-body">
@@ -111,6 +117,7 @@ export default function CartPage() {
                                 <span className="h4 fw-bold">סה"כ לתשלום:</span>
                                 <span className="h4 fw-bold text-primary">₪{cartTotal.toFixed(2)}</span>
                             </div>
+                            
                             <button 
                                 className="btn btn-success w-100 btn-lg"
                                 onClick={() => navigate('/checkout')}

@@ -71,9 +71,9 @@ export const NavBar = () => {
                     <div className="d-flex gap-2 align-items-center flex-column flex-lg-row"> 
                         {user ? (
                             <>
-                                <span className="text-light me-2">
-                                    שלום, {user.firstName}
-                                </span>
+                                <h5 className="text-success me-2">
+                                    שלום  {user.firstName} {user.lastName}
+                                </h5>
                                 
                                 <Link to="/orders" className="btn btn-outline-light btn-sm w-100 w-lg-auto" onClick={closeMenu}>
                                     ההזמנות שלי

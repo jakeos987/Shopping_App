@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import { NavBar } from "./pages/NavBar";
 import  CartPage  from './pages/CartPage'
 import  CheckoutPage  from "./pages/CheckoutPage";
+import OrderPage from "./pages/OrderPage";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="orders" element={<OrderPage/>}/>
       </Routes>
     </BrowserRouter>
   )

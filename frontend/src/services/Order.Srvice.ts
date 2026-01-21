@@ -3,11 +3,11 @@ import type { Order } from '../features/orders/types';
 
 export const orderService={
     async getAll(){
-        const res = await api.get<Order[]>('/order')
+        const res = await api.get<Order[]>('/orders')
         return res.data
     },
     async checkout(){
-        const res = await api.post(`/order/checkout`,{})
+        const res = await api.post(`/orders/checkout`,{})
         return res.data
     },
 }

@@ -1,9 +1,18 @@
 import {type Product } from "../products/types"
 
+export enum OrderStatus{
+    pending="PENDING",
+    shipped="SHIPPED",
+    delivered="DELIVERED",
+    cancelled="CANCELLED"
+}
+
 export interface Order{
     orderId:number
     createdAt:string
-    total:number
+    totalAmount:number
+    orderStatus:OrderStatus
+    orderDate:Date
     orderItems:OrderItem[]
 }
 
