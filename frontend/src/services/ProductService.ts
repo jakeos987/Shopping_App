@@ -22,8 +22,8 @@ export const productService={
         const res = await api.post<Product>('/product',productData)
         return res.data
     },
-    async update(id:number){
-        const res = await api.patch<Product>(`/product/${id}`)
+    async update(id:number, productData: Partial<Product>){
+        const res = await api.patch<Product>(`/product/${id}`, productData)
         return res.data
     },
     async delete(id:number){

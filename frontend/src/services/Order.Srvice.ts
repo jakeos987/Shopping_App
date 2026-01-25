@@ -10,4 +10,8 @@ export const orderService={
         const res = await api.post(`/orders/checkout`,{})
         return res.data
     },
+    async updateStatus(orderId:number, status:string){
+        const res = await api.patch(`/orders/${orderId}`,status)
+        return res.data
+    },
 }

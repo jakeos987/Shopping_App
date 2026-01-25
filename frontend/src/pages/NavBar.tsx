@@ -71,7 +71,7 @@ export const NavBar = () => {
                     <div className="d-flex gap-2 align-items-center flex-column flex-lg-row"> 
                         {user ? (
                             <>
-                                <h5 className="text-success me-2">
+                                <h5 className="me-2" style={{ color: '#35c0bd' }}>
                                     שלום  {user.firstName} {user.lastName}
                                 </h5>
                                 

@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { User, CreateUserDTO, UpdateUserDTO } from '../features/user/types';
+import type { User, CreateUserDTO, UpdateUserDTO, UserRole } from '../features/user/types';
 
 export const userService = {
     async getAll(){
@@ -16,6 +16,10 @@ export const userService = {
     },
     async update(id:number|string, userData:UpdateUserDTO){
         const res = await api.patch<User>(`/users/${id}`,userData)
+        return res.data
+    },
+    async updateUserRole(id:number| string, role: UserRole){
+        const res = await api.patch<User>(`/users/${id}`,{role})
         return res.data
     },
     async remove(id:number|string){

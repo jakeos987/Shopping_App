@@ -83,5 +83,13 @@ async findAll(userId:number){
       order:{orderDate:'DESC'}
   })
 }
+async updateStatus(orderId:number, status:OrderStatus){
+  const order = await this.OrderRepo.findOneBy({orderId})
+  if(!order){
+    throw new NotFoundException('Order not found')
+  }
+  order.status = status
+  return this.OrderRepo.save(order)
+}
 
 }

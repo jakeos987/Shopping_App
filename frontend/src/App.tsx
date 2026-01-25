@@ -8,6 +8,9 @@ import { NavBar } from "./pages/NavBar";
 import  CartPage  from './pages/CartPage'
 import  CheckoutPage  from "./pages/CheckoutPage";
 import OrderPage from "./pages/OrderPage";
+import AdminProductPage from "./pages/AdminProductPage";
+import AdminUserPage from "./pages/AdminUserPage";
+
 
 function App() {
 
@@ -21,6 +24,8 @@ function App() {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="orders" element={<OrderPage/>}/>
+      <Route path="admin/products" element={<AdminProductPage/>}/>
+      <Route path="admin/users" element={<AdminUserPage/>}/>
       </Routes>
     </BrowserRouter>
   )

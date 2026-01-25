@@ -14,6 +14,7 @@ import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/entities/cart.entity';
 import { CartItem } from './cart/entities/cartItem.entity';
 import { AuthModule } from './auth/auth.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [ UsersModule,OrdersModule,CartModule,ProductModule,ConfigModule.forRoot({
@@ -35,6 +36,7 @@ useFactory:(configService:ConfigService)=>({
   }),
 }),
 AuthModule,
+CloudinaryModule,
 
 ],
   controllers: [AppController],

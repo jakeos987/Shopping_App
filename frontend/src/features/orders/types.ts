@@ -1,4 +1,5 @@
 import {type Product } from "../products/types"
+import { type User } from "../user/types"
 
 export enum OrderStatus{
     pending="PENDING",
@@ -13,6 +14,7 @@ export interface Order{
     totalAmount:number
     orderStatus:OrderStatus
     orderDate:Date
+    user?:User
     orderItems:OrderItem[]
 }
 

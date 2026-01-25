@@ -8,6 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CartItem } from '../cart/entities/cartItem.entity';
 import { ProductCategory } from './entities/product.entity';
 import { ProductFilterDto } from './dto/product-filter.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class ProductService {
@@ -16,10 +17,16 @@ constructor(
   private readonly productRepo:Repository<Product>,
 
   @InjectRepository(CartItem)
-  private readonly cartItemRepo:Repository<CartItem>
+  private readonly cartItemRepo:Repository<CartItem>,
+  private readonly cloudi: CloudinaryService
 ){}
 
- async create(createProduct: CreateProductDto) {
+ async create(createProduct: CreateProductDto, file?: Express.Multer.File) {
+  let ImageUrl = createProduct.imageUrl
+  if(file){
+    const uploadRes = await this.cloudi.uploadImage(file)
+    const finalImageUrl = uploadRes.secure_url || uploadRes.url;
+  }
     const exitingProduct = await this.productRepo.findOne({
       where:{ 
         name:createProduct.name,
@@ -28,7 +35,9 @@ constructor(
       exitingProduct.stockQuantity += createProduct.stockQuantity
       return this.productRepo.save(exitingProduct) 
       
-    }const newProduct = this.productRepo.create(createProduct)
+    }const newProduct = this.productRepo.create({
+      ...createProduct,
+      imageUrl:ImageUrl})
     return this.productRepo.save(newProduct)
     
   }
@@ -95,11 +104,16 @@ async findByNameOrCategoryOrId(name?:string,category?:ProductCategory,id?:number
 
 
 
-  async update(id:number,updateProductDto:UpdateProductDto){
-  const product = await this.productRepo.findOneBy({productId:id})
-  if(!product){
+  async update(id:number,updateProductDto:UpdateProductDto, file?: Express.Multer.File){
+    const product = await this.productRepo.findOneBy({productId:id})
+    if(!product){
     throw new NotFoundException(`Product with ID ${id} not found`)
   }
+    if(file){
+    const newImageUrl = await this.cloudi.uploadImage(file)
+    product.imageUrl = newImageUrl.secure_url || newImageUrl.url
+  }
+  
   Object.assign(product,updateProductDto)
   return this.productRepo.save(product)
 }

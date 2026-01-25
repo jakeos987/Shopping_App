@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes, UploadedFile } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -10,6 +10,9 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator'
 import { ProductFilterDto } from './dto/product-filter.dto';
 import { ParseIntPipe } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+
 
 @Controller('product')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -18,8 +21,9 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
+  @UseInterceptors(FileInterceptor('image'))
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
+  create(@Body() createProductDto: CreateProductDto, @UploadedFile()file: Express.Multer.File) {
     return this.productService.create(createProductDto);
   }
 
@@ -33,14 +37,6 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
-  // @Get('serch')
-  // async serch(
-  // @Query('name')name?:string,
-  // @Query('category')category?:ProductCategory,
-  // @Query('id')id?:number) {
-  //   return this.productService.findByNameOrCategoryOrId(name,category,id)
-  // }
-
   @Get('filter')
   @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
   async filter(@Query()filterDto: ProductFilterDto){
@@ -50,8 +46,9 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
+  @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto,@UploadedFile() file: Express.Multer.File) {
     return this.productService.update(+id, updateProductDto);
   }
   
