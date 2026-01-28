@@ -53,11 +53,17 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    const user = await this.findOne(id)
-    if(!user){
-      throw new NotFoundException('user not found')
-    }
-    await this.userRepo.remove(user)
-    return `This action removed the ${id} user`;
+  const result = await this.userRepo.softDelete(id);
+  if (result.affected === 0) {
+    throw new NotFoundException(`User with ID ${id} not found`);
   }
+  return { message: `User with ID ${id} was soft-deleted` };
+}
+async restore(id: number) {
+  const result = await this.userRepo.restore(id);
+  if (result.affected === 0) {
+    throw new NotFoundException(`User with ID ${id} not found`);
+  }
+  return await this.userRepo.findOne({ where: { id } });
+}
 }

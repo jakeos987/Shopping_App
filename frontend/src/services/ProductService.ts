@@ -18,13 +18,24 @@ export const productService={
         })
         return res.data
     },
-    async create(productData:any){
-        const res = await api.post<Product>('/product',productData)
-        return res.data
+    create: async (formData: FormData) => {
+        return api.post('/product', formData, {
+            headers: {
+                // ⭐ התיקון הקריטי:
+                // במקום לכתוב מחרוזת, אנחנו מגדירים undefined.
+                // זה גורם ל-Axios להסיר את ה-JSON Header, 
+                // והדפדפן משלים לבד את ה-multipart + boundary.
+                "Content-Type": undefined 
+            }
+        });
     },
-    async update(id:number, productData: Partial<Product>){
-        const res = await api.patch<Product>(`/product/${id}`, productData)
-        return res.data
+
+    update: async (id: number, formData: FormData) => {
+        return api.patch(`/product/${id}`, formData, {
+            headers: {
+                "Content-Type": undefined 
+            }
+        });
     },
     async delete(id:number){
         const res = await api.delete(`/product/${id}`)
@@ -32,6 +43,10 @@ export const productService={
     },
     async restore(id:number){
         const res = await api.patch<Product>(`/product/restore/${id}`)
+        return res.data
+    },
+    async getDeleted(){
+        const res = await api.get<Product[]>('/product/deleted')
         return res.data
     }
 }

@@ -12,6 +12,7 @@ export interface Product{
     category:ProductCategory
     price:number
     stockQuantity:number
+    deletedAt:Date
     imageUrl?:string
     isActive:boolean
 }

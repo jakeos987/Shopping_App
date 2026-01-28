@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     provide: 'CLOUDINARY',
     useFactory: (configS: ConfigService)=>{
         return cloudinary.config({
-            cloude_Name:configS.get('CLOUDINARY_CLOUD_NAME'),
+            cloud_name:configS.get('CLOUDINARY_CLOUD_NAME'),
             api_key: configS.get('CLOUDINARY_API_KEY'),
             api_secret: configS.get('CLOUDINARY_API_SECRET')
         })

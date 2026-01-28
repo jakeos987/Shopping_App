@@ -27,18 +27,17 @@ export default function OrderPage(){
                 <Link to="/" className="btn btn-primary mt-3">התחל לקנות</Link>
         </div>
     )
-    return(
-        <div className="container mt-5">
+    return(<div className="container mt-5">
             <h2 className="mb-4">ההזמנות שלי</h2>
             <div className="row g-4">
                 {orders.map((order) => (
                     <div key={order.orderId} className="col-12">
                         <div className="card shadow-sm">
                             <div className="card-header bg-white d-flex justify-content-between align-items-center">
+                                {/* 👇 תיקון 1: רק תאריך בכותרת */}
                                 <div>
-                                    <strong>הזמנה #{order.orderId}</strong>
-                                    <span className="text-muted ms-2">
-                                        | {new Date(order.orderDate).toLocaleDateString('he-IL')}
+                                    <span className="fw-bold fs-5">
+                                        {new Date(order.orderDate).toLocaleDateString('he-IL')}
                                     </span>
                                 </div>
                                 <span className={`badge ${order.orderStatus === 'PENDING' ? 'bg-warning' : 'bg-success'}`}>
@@ -53,7 +52,7 @@ export default function OrderPage(){
                                                 <tr key={item.orderItemId}>
                                                     <td style={{width: '60px'}}>
                                                         <img 
-                                                            src={item.product?.imageUrl || 'https://via.placeholder.com/40'} 
+                                                            src={item.product?.imageUrl || 'https://placehold.co/40'} 
                                                             alt="" 
                                                             style={{width: '40px', height: '40px', objectFit: 'cover'}}
                                                             className="rounded"
@@ -61,7 +60,10 @@ export default function OrderPage(){
                                                     </td>
                                                     <td>{item.product?.name || 'מוצר'}</td>
                                                     <td>x{item.quantity}</td>
-                                                    <td className="text-end">₪{Number(item.price).toFixed(2)}</td>
+                                                    {/* 👇 תיקון 2: חישוב מחיר כפול כמות */}
+                                                    <td className="text-end">
+                                                        ₪{(Number(item.price) * item.quantity).toFixed(2)}
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>

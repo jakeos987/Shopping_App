@@ -13,23 +13,37 @@ import { ParseIntPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 
-
+@UseGuards(JwtAuthGuard,RolesGuard)
 @Controller('product')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @UseGuards(JwtAuthGuard,RolesGuard)
+  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @UseInterceptors(FileInterceptor('image'))
   @Post()
   create(@Body() createProductDto: CreateProductDto, @UploadedFile()file: Express.Multer.File) {
-    return this.productService.create(createProductDto);
+    console.log('🔍 Controller Check - File object:', file);
+    return this.productService.create(createProductDto, file);
   }
+@Get('filter')
+  @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
+  async filter(@Query()filterDto: ProductFilterDto){
+    return this.productService.findWithFilter(filterDto)
+  }
+
+
 
   @Get()
   findAll() {
     return this.productService.findAll();
+  }
+//  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
+  @Get('deleted')
+  findDeleted(){
+    return this.productService.findDeleted()
   }
 
   @Get(':id')
@@ -37,31 +51,26 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
-  @Get('filter')
-  @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
-  async filter(@Query()filterDto: ProductFilterDto){
-    return this.productService.findWithFilter(filterDto)
-  }
 
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto,@UploadedFile() file: Express.Multer.File) {
-    return this.productService.update(+id, updateProductDto);
+    return this.productService.update(+id, updateProductDto, file);
   }
   
-  @UseGuards(JwtAuthGuard,RolesGuard)
+  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }
-  @UseGuards(JwtAuthGuard,RolesGuard)
+  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Patch('restore/:id')
   restore(@Param('id',ParseIntPipe)id:number){
     return this.productService.restore(id)
   }
+ 
 }

@@ -17,6 +17,8 @@
   export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
       return this.usersService.create(createUserDto);
@@ -33,13 +35,16 @@
       return this.usersService.findOne(+id);
     }
 
+    @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request()req) {
       return this.usersService.update(+id, updateUserDto,req.user);
     }
     
-
-    @Delete(':id')
+    @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(Role.admin)
+    @Patch(':id')
     remove(@Param('id') id: string) {
       return this.usersService.remove(+id);
     }

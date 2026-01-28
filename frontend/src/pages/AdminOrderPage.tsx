@@ -62,7 +62,7 @@ export default function AdminOrdersPage() {
                             <th>תאריך</th>
                             <th>פריטים</th>
                             <th>סה"כ לתשלום</th>
-                            <th>סטטוס</th>
+                            <th>סטאטוס</th>
                         </tr>
                     </thead>
                     <tbody>

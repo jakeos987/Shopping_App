@@ -1,4 +1,5 @@
 import { type Product } from "../types";
+import  toast  from "react-hot-toast";
 import { useAuthStore } from '../../../store/UseAuth.store';
 import { useCartStore } from '../../../store/UseCart.store';
 import { useNavigate } from "react-router-dom";
@@ -19,71 +20,77 @@ export const ProductCard = ({ product }: Props) => {
 
     const handlerSubmit = async () => {
         setAdding(true);
-        try {
-            // וודא ש-product.productId הוא השם הנכון ב-Type שלך (אולי זה product.id?)
-            await addToCart(product.productId, 1);
-            // אפשר להשתמש ב-Toast במקום Alert לחוויה טובה יותר בעתיד
-            alert(`הוספת את ${product.name} לסל`);
-        } catch (error) {
-            console.error(error);
-            alert("שגיאה בהוספה לסל");
-        } finally {
-            setAdding(false);
-        }
+        try {await addToCart(product.productId, 1);
+        
+        // ⭐ התיקון: במקום alert, הודעה יפה שלא תוקעת את המסך
+        toast.success(`נוסף לעגלה: ${product.name}`, {
+            style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+            },
+        });
+
+    } catch (error) {
+        console.error(error);
+        // גם בשגיאה נשתמש ב-toast
+        toast.error("שגיאה בהוספה לסל");
+    } finally {
+        setAdding(false);
+    }
     }
 
     return (
-        <div className="col-md-4 col-sm-6 mb-4"> {/* col-sm-6 מוסיף רספונסיביות למובייל */}
-            <div className="card h-100 shadow-sm border-0"> {/* border-0 לעיצוב נקי יותר */}
+           <div className="card h-100 shadow-sm border-0 product-card-hover"> 
+            
+            {/* ⭐ שינוי 2: הקטנת גובה התמונה ושיפור העיצוב */}
+            <div className="position-relative bg-white p-3 d-flex align-items-center justify-content-center" style={{ height: '160px' }}>
+                <img 
+                    src={product.imageUrl || "https://via.placeholder.com/150"} // תמונת גיבוי אם אין לינק
+                    className="img-fluid" 
+                    alt={product.name}
+                    style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                />
                 
-                {/* אזור התמונה */}
-                <div style={{ height: '200px', overflow: 'hidden' }} className="bg-light d-flex align-items-center justify-content-center">
-                    <img 
-                        src={product.imageUrl }
-                        className="card-img-top"
-                        alt={product.name}
-                        style={{ height: '100%', width: '100%', objectFit: 'contain' }}
-                    />
-                </div>
+                {/* התג (Badge) צף על התמונה - נראה יותר מודרני */}
+                <span className="position-absolute top-0 end-0 m-2 badge bg-light text-secondary border shadow-sm" style={{fontSize: '0.7rem'}}>
+                    {product.category}
+                </span>
+            </div>
 
-                <div className="card-body d-flex flex-column">
+            <div className="card-body d-flex flex-column p-3">
                 
-                    <h5 className="card-title text-center mb-3">{product.name}</h5>
+                {/* כותרת קטנה יותר */}
+                <h6 className="card-title text-center fw-bold text-truncate mb-2" title={product.name}>
+                    {product.name}
+                </h6>
+                
+                {/* מחיר וכפתור בשורה אחת */}
+                <div className="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                    <span className="text-primary fw-bold">₪{product.price}</span>
                     
-                    <div className="mb-3 text-center">
-                        <span className="badge bg-light text-dark border">
-                            {product.category}
-                        </span>
-                    </div>
-                    <div className="mt-auto">
-                        <div className="d-flex justify-content-between align-items-center">
-                            <span className="h5 mb-0 text-primary fw-bold">₪{product.price}</span>
-                            
-                            {isActivated ? (
-                                <button 
-                                    className={`btn ${product.stockQuantity > 0 ? 'btn-primary' : 'btn-secondary'}`}
-                                    onClick={handlerSubmit}
-                                    disabled={product.stockQuantity === 0 || adding}
-                                >
-                                    {adding ? (
-                                        <>
-                                            <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                                            מוסיף...
-                                        </>
-                                    ) : (
-                                        product.stockQuantity > 0 ? "🛒 הוסף" : "אזל המלאי"
-                                    )}
-                                </button>
+                    {isActivated ? (
+                        <button 
+                            className={`btn btn-sm ${product.stockQuantity > 0 ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={handlerSubmit}
+                            disabled={product.stockQuantity === 0 || adding}
+                            style={{minWidth: '80px'}} // רוחב קבוע לכפתור שלא יקפוץ
+                        >
+                            {adding ? (
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             ) : (
-                                <button 
-                                    className="btn btn-outline-secondary btn-sm"
-                                    onClick={() => navigate('/login')}
-                                >
-                                    התחבר לקנייה
-                                </button>
+                                product.stockQuantity > 0 ? "+ הוסף" : "חסר"
                             )}
-                        </div>
-                    </div>
+                        </button>
+                    ) : (
+                        <button 
+                            className="btn btn-outline-dark btn-sm"
+                            style={{fontSize: '0.75rem'}}
+                            onClick={() => navigate('/login')}
+                        >
+                            התחבר
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

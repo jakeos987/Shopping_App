@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column,OneToMany,CreateDateColumn, OneToOne, DeleteDateColumn} from "typeorm";
 import { Exclude } from 'class-transformer';
 import {Order} from '../../orders/entities/order.entity';
 import { Cart } from '../../cart/entities/cart.entity';
@@ -33,12 +33,15 @@ export class User {
     })
     role:Role
 
+    @DeleteDateColumn()
+    deletedAd: Date
+
     @CreateDateColumn()
     createdAt:Date
     
     @OneToMany(()=>Order,(order)=>order.assignedTo)
     orders:Order[]
 
-    @OneToMany(()=>Cart,(cart)=>cart.assignedTo)
-    carts:Cart[]
+    @OneToOne(()=>Cart,(cart)=>cart.assignedTo)
+    carts:Cart
 }

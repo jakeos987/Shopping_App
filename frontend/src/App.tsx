@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 import  RegisterPage  from "./pages/RegisterPage";
 import  LoginPage  from './pages/LoginPage';
 import { BrowserRouter } from "react-router-dom";
@@ -16,6 +16,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <Toaster position="top-center" reverseOrder={false} />
       <NavBar />
     <Routes>
       <Route path='/login' element={<LoginPage />} />
