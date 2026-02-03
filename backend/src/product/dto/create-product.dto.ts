@@ -1,7 +1,7 @@
 import { IsNotEmpty,IsString,IsOptional,IsNumber,Min,IsEnum,IsBoolean,maxLength,minLength } from 'class-validator'
 import { ProductCategory } from '../entities/product.entity';
 import { Type } from 'class-transformer';
-
+import { Category }  from '../entities/category.entity';
 
 export class CreateProductDto {
     @IsNotEmpty()
@@ -12,8 +12,9 @@ export class CreateProductDto {
     @IsOptional()
     description?:string|null
 
-    @IsEnum(ProductCategory)
-    category:ProductCategory
+    @Type(()=>Number)
+    @IsNumber()
+    categoryId:number
 
     @Type(()=>Number)
     @IsNumber()

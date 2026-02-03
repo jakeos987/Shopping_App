@@ -39,18 +39,25 @@ export class UsersService {
     return await this.userRepo.findOneBy({ email });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, currentUser: User) {
-    const user = await this.userRepo.findOneBy({id})
-    if(!user){
-      throw new NotFoundException('user not found')
+ async update(id: number, updateUserDto: UpdateUserDto, currentUser: User) {
+    const user = await this.userRepo.findOneBy({ id }); 
+    
+    if (!user) {
+        throw new NotFoundException('User not found');
     }
-    Object.assign(user,updateUserDto)
+
     if (updateUserDto.role && currentUser.role !== Role.admin) {
-        throw new ForbiddenException("רק מנהל מערכת יכול לשנות תפקידי משתמשים!");
+        throw new ForbiddenException("!רק מנהל מערכת יכול לשנות תפקידי משתמשים");
     }
-    this.userRepo.save(user)
-    return `updated ${user.email}`
-  }
+    if (updateUserDto.password) {
+        const salt = await bcrypt.genSalt();
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, salt);
+    }
+    Object.assign(user, updateUserDto);
+    await this.userRepo.save(user);
+    const { password, ...result } = user;
+    return result;
+}
 
   async remove(id: number) {
   const result = await this.userRepo.softDelete(id);

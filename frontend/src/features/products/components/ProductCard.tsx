@@ -5,6 +5,7 @@ import { useCartStore } from '../../../store/UseCart.store';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+
 interface Props {
     product: Product
 }
@@ -23,10 +24,10 @@ export const ProductCard = ({ product }: Props) => {
         try {await addToCart(product.productId, 1);
         
         // ⭐ התיקון: במקום alert, הודעה יפה שלא תוקעת את המסך
-        toast.success(`נוסף לעגלה: ${product.name}`, {
+        toast.success(`${product.name} :נוסף לעגלה`, {
             style: {
-                borderRadius: '10px',
-                background: '#333',
+                borderRadius: '1000px',
+                background: 'rgb(94, 95, 93)',
                 color: '#fff',
             },
         });
@@ -54,7 +55,7 @@ export const ProductCard = ({ product }: Props) => {
                 
                 {/* התג (Badge) צף על התמונה - נראה יותר מודרני */}
                 <span className="position-absolute top-0 end-0 m-2 badge bg-light text-secondary border shadow-sm" style={{fontSize: '0.7rem'}}>
-                    {product.category}
+                    {product.category?.name}
                 </span>
             </div>
 

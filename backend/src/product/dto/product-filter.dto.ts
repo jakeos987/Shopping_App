@@ -8,7 +8,7 @@ export class ProductFilterDto{
     search?: string;
 
     @IsOptional()
-    category:ProductCategory
+    categoryId:number
 
     @IsOptional()
     @Type(()=>Number)

@@ -15,6 +15,7 @@ import { Cart } from './cart/entities/cart.entity';
 import { CartItem } from './cart/entities/cartItem.entity';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { Category } from './product/entities/category.entity';
 
 @Module({
   imports: [ UsersModule,OrdersModule,CartModule,ProductModule,ConfigModule.forRoot({
@@ -31,7 +32,7 @@ useFactory:(configService:ConfigService)=>({
   username:configService.get<string>('DB_USERNAME'),
   password:configService.get<string>('DB_PASSWORD'),
   database:configService.get<string>('DB_DATABASE'),
-  entities:[User,Order,Product,OrderItem,Cart,CartItem],
+  entities:[User, Order, Product, OrderItem, Cart, CartItem, Category],
   synchronize:true,
   }),
 }),

@@ -23,7 +23,7 @@ export const userService = {
         return res.data
     },
     async remove(id:number|string){
-        const res = await api.delete(`/users/${id}`)
+        const res = await api.patch(`/users/${id}`)
         return res.data
     }
 }

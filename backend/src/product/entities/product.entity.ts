@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn,Column,OneToMany,DeleteDateColumn} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn,Column,OneToMany,DeleteDateColumn, ManyToOne} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { OrderItem } from '../../orders/entities/orderItem.entity';
 import { CartItem } from '../../cart/entities/cartItem.entity';
+import { Category } from './category.entity'
 
 export enum ProductCategory{
     electronics="ELECTRONICS",
@@ -20,9 +21,6 @@ export class Product {
     @Column()
     name:string;
 
-    @Column()
-    category:ProductCategory;
-
     @Column('decimal',{precision:11,scale:2})
     price:number;
 
@@ -33,11 +31,9 @@ export class Product {
     imageUrl:string | null;
 
 
-    @Column('boolean',{default:false})
-    isActive:boolean;
+
 
     @DeleteDateColumn()
-    // @Exclude()
     deletedAt: Date;
     
 
@@ -46,4 +42,8 @@ export class Product {
 
     @OneToMany(()=>CartItem,(cartitem)=>cartitem.product)
     cartItems:CartItem[];
+
+    @ManyToOne(()=> Category,(category)=>category.products)
+    category:Category;
+
 }

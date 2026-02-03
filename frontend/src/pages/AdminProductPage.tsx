@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import { productService } from "../services/ProductService"; // וודא שפונקציית restore נמצאת שם
+import { productService } from "../services/ProductService"; 
 import { type Product } from "../features/products/types";
+import toast from "react-hot-toast";
+import { type Category } from "../features/products/types";
 
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     
-    // ⭐ מצב חדש: האם אנחנו צופים במוצרים פעילים או בסל המחזור?
+    // מצב סל מחזור
     const [isTrashMode, setIsTrashMode] = useState(false);
 
-    // --- State לניהול המודלים (חלונות קופצים) ---
+    // ⭐ שינוי 1: סטייט לקטגוריות
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [categoryId, setCategoryId] = useState<number>(0); // עובדים עם מספר
+
+    // --- State לניהול המודלים ---
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     
@@ -19,21 +25,32 @@ export default function AdminProductsPage() {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
     const [stock, setStock] = useState("");
-    const [category, setCategory] = useState("");
+    // מחקתי את const [category, setCategory] כי אנחנו משתמשים ב-categoryId
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    // טעינת מוצרים בכל פעם שהמצב (פעיל/זבל) משתנה
+    // ⭐ שינוי 2: טעינת הקטגוריות מהשרת כשהדף עולה
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await productService.getCategories();
+                setCategories(data);
+            } catch (err) {
+                console.error("Failed to load categories");
+                toast.error("שגיאה בטעינת קטגוריות");
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // טעינת מוצרים
     useEffect(() => {
         loadProducts();
-    }, [isTrashMode]); // 👈 הוספתי תלות ב-isTrashMode
+    }, [isTrashMode]);
 
     const loadProducts = async () => {
         try {
             let data;
             if (isTrashMode) {
-                // ⭐ כאן אתה צריך לקרוא לנתיב שמביא מוצרים מחוקים
-                // אם אין לך עדיין, תצטרך ליצור ב-Backend נתיב עם withDeleted: true
-                // לצורך הדוגמה אני מניח שיש פונקציה כזו:
                 data = await productService.getDeleted(); 
             } else {
                 data = await productService.getAll();
@@ -41,26 +58,23 @@ export default function AdminProductsPage() {
             setProducts(data); 
         } catch (error) {
             console.error(error);
-            // במקרה שאין פונקציית getDeleted עדיין, נאפס כדי לא לשבור
             if(isTrashMode) setProducts([]); 
         }
     };
 
-    // ⭐ פונקציית השחזור החדשה
     const handleRestore = async (id: number) => {
         if (!window.confirm("האם לשחזר את המוצר? ♻️")) return;
-
         try {
-            await productService.restore(id); // הקריאה לשרת
-            alert("המוצר שוחזר בהצלחה!");
-            loadProducts(); // רענון הטבלה
+            await productService.restore(id);
+            toast.success("המוצר שוחזר בהצלחה!");
+            loadProducts();
         } catch (error) {
             console.error(error);
-            alert("שגיאה בשחזור המוצר");
+            toast.error("שגיאה בשחזור המוצר");
         }
     };
 
-    // --- איפוס וסגירת מודלים ---
+    // --- איפוס ---
     const closeModals = () => {
         setShowEditModal(false);
         setShowDeleteModal(false);
@@ -70,37 +84,43 @@ export default function AdminProductsPage() {
         setName("");
         setPrice("");
         setStock("");
-        setCategory("");
+        setCategoryId(0); // ⭐ מאפסים את המספר
         setSelectedFile(null);
         
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
         if(fileInput) fileInput.value = "";
     };
 
-    // --- פתיחת מודל יצירה ---
     const openCreateModal = () => {
         closeModals(); 
         setShowEditModal(true);
     };
 
-    // --- פתיחת מודל עריכה ---
+    // --- ⭐ שינוי 3: פתיחת עריכה עם זיהוי הקטגוריה ---
     const openEditModal = (p: Product) => {
         closeModals();
         setEditingId(p.productId);
         setName(p.name);
         setPrice(p.price.toString());
         setStock(p.stockQuantity.toString());
-        setCategory(p.category || "");
+        
+        // כאן אנחנו לוקחים את ה-ID של הקטגוריה מתוך המוצר
+        // (ב-Product Entity יש לנו אובייקט category שיש לו id)
+        if (p.category && p.category.categoryId) {
+            setCategoryId(p.category.categoryId); 
+        } else {
+            setCategoryId(0);
+        }
+
         setShowEditModal(true);
     };
 
-    // --- פתיחת מודל מחיקה ---
     const openDeleteModal = (id: number) => {
         setDeleteId(id);
         setShowDeleteModal(true);
     };
 
-    // --- שליחת טופס (יצירה או עריכה) ---
+    // --- ⭐ שינוי 4: שליחת ה-ID לשרת ---
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -108,44 +128,41 @@ export default function AdminProductsPage() {
         formData.append('name', name);
         formData.append('price', price);
         formData.append('stockQuantity', stock);
-        formData.append('category', category);
+        
+        // שולחים את המספר, לא את השם!
+        formData.append('categoryId', categoryId.toString());
 
         if (selectedFile) {
             formData.append('image', selectedFile);
         }
-        if (selectedFile) {
-        console.log("✅ File found:", selectedFile.name, selectedFile.size);
-    } else {
-        console.log("❌ No file in state! selectedFile is null");
-    }
 
         try {
             if (editingId) {
                 await productService.update(editingId, formData);
-                alert("המוצר עודכן בהצלחה! ✅");
+                toast.success("המוצר עודכן בהצלחה! ✅");
             } else {
                 await productService.create(formData);
-                alert("המוצר נוצר בהצלחה! 🎉");
+                toast.success("המוצר נוצר בהצלחה! 🎉");
             }
             
             closeModals();
             loadProducts();
         } catch (error) {
             console.error(error);
-            alert("שגיאה בשמירה");
+            toast.error("שגיאה בשמירה");
         }
     };
 
-    // --- ביצוע המחיקה בפועל ---
     const performDelete = async () => {
         if (!deleteId) return;
         try {
             await productService.delete(deleteId);
             closeModals();
             loadProducts();
+            toast.success("המוצר נמחק");
         } catch (error) {
             console.error(error);
-            alert("שגיאה במחיקה");
+            toast.error("שגיאה במחיקה");
         }
     };
 
@@ -155,7 +172,6 @@ export default function AdminProductsPage() {
                 <h2>{isTrashMode ? "סל מחזור 🗑️" : "ניהול מוצרים 🍎"}</h2>
                 
                 <div>
-                    {/* ⭐ כפתור למעבר בין מצבים */}
                     <button 
                         className={`btn ${isTrashMode ? 'btn-outline-secondary' : 'btn-warning'} me-2`} 
                         onClick={() => setIsTrashMode(!isTrashMode)}
@@ -202,11 +218,10 @@ export default function AdminProductsPage() {
                                     )}
                                 </td>
                                 <td>{p.name}</td>
-                                <td>{p.category}</td>
+                                <td>{p.category?.name || "ללא"}</td> {/* מציג את שם הקטגוריה */}
                                 <td>₪{p.price}</td>
                                 <td>{p.stockQuantity}</td>
                                 <td>
-                                    {/* ⭐ לוגיקת כפתורים משתנה לפי המצב */}
                                     {isTrashMode ? (
                                         <button className="btn btn-sm btn-success" onClick={() => handleRestore(p.productId)}>
                                             שחזר ♻️
@@ -228,10 +243,9 @@ export default function AdminProductsPage() {
                 </table>
             </div>
 
-            {/* --- מודלים נשארו זהים, לכן לא שיניתי אותם בקוד זה --- */}
+            {/* --- מודל עריכה/יצירה --- */}
             {showEditModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                     {/* ... אותו תוכן של מודל עריכה ... */}
                      <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -240,7 +254,6 @@ export default function AdminProductsPage() {
                             </div>
                             <div className="modal-body">
                                 <form onSubmit={handleSubmit}>
-                                    {/* ... טופס ... */}
                                     <div className="mb-3">
                                         <label className="form-label">שם המוצר</label>
                                         <input type="text" className="form-control" required value={name} onChange={e => setName(e.target.value)} />
@@ -255,10 +268,25 @@ export default function AdminProductsPage() {
                                             <input type="number" className="form-control" required value={stock} onChange={e => setStock(e.target.value)} />
                                         </div>
                                     </div>
+
+                                    {/* ⭐ שינוי 5: החלפת Input ב-Select דינמי */}
                                     <div className="mb-3">
                                         <label className="form-label">קטגוריה</label>
-                                        <input type="text" className="form-control" value={category} onChange={e => setCategory(e.target.value)} />
+                                        <select 
+                                            className="form-select" 
+                                            value={categoryId} 
+                                            onChange={e => setCategoryId(Number(e.target.value))}
+                                            required
+                                        >
+                                            <option value={0}>בחר קטגוריה...</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat.categoryId} value={cat.categoryId}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
+
                                     <div className="mb-3">
                                         <label className="form-label">תמונה</label>
                                         <input id="fileInput" type="file" className="form-control" accept="image/*" 
@@ -277,7 +305,6 @@ export default function AdminProductsPage() {
 
             {showDeleteModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                     {/* ... אותו תוכן של מודל מחיקה ... */}
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">

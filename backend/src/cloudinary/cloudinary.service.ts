@@ -10,7 +10,6 @@ export class CloudinaryService {
         return new Promise((resolve,reject)=>{
         const upload = cloudinary.uploader.upload_stream({
             folder:'shopping_appproducts',
-            allowed_formats:['jpg','png','jpeg','webp'],
             transformation:[{width:500,height:500,crop:'limit'}]
         },
         (error,result)=>{

@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/UseAuth.store";
 import { useCartStore } from "../store/UseCart.store"
 import { UserRole } from "../features/user/types";
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 
 export const NavBar = () => {
     const { user, logout } = useAuthStore();
@@ -33,18 +33,25 @@ export const NavBar = () => {
 
     const cartCount = cart?.cartItems?.length || 0;
 
+    // DEBUG: Log the user object to see the role
+    console.log('Current User in NavBar:', user);
+    console.log('Role Check:', {
+        role: user?.role,
+        isAdminEnum: user?.role === UserRole.ADMIN,
+        isAdminString: (user?.role as string) === 'admin'
+    });
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div className="container">
                 <Link className="navbar-brand" to="/" onClick={closeMenu}>🛍️ החנות שלי</Link>
-                
-               
-                <button 
-                    className="navbar-toggler" 
-                    type="button" 
-                    onClick={toggleMenu} 
-                    aria-controls="navbarNav" 
-                    aria-expanded={isMenuOpen} 
+
+                <button
+                    className="navbar-toggler"
+                    type="button"
+                    onClick={toggleMenu}
+                    aria-controls="navbarNav"
+                    aria-expanded={isMenuOpen}
                     aria-label="Toggle navigation"
                 >
                     <span className="navbar-toggler-icon"></span>
@@ -55,8 +62,9 @@ export const NavBar = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/" onClick={closeMenu}>בית</Link>
                         </li>
-                        
-                        {user?.role === UserRole.ADMIN && (
+
+                        {/* Robust check for admin role (handling both uppercase and lowercase) */}
+                        {user && (user.role === UserRole.ADMIN || (user.role as string) === 'admin') && (
                             <>
                                 <li className="nav-item">
                                     <Link className="nav-link text-warning" to="/admin/users" onClick={closeMenu}>ניהול משתמשים</Link>
@@ -68,15 +76,16 @@ export const NavBar = () => {
                         )}
                     </ul>
 
-                    <div className="d-flex gap-2 align-items-center flex-column flex-lg-row"> 
+                    <div className="d-flex gap-2 align-items-center flex-column flex-lg-row">
                         {user ? (
                             <>
-                                <h5 className="me-2" style={{ color: '#35c0bd' }}>
-                                    שלום  {user.firstName} {user.lastName}
-                                </h5>
-                                
+                                {/* ⭐ כאן התיקון: במקום הטקסט של "שלום", שמנו כפתור לפרופיל */}
+                                <Link to="/profile" className="btn btn-outline-info btn-sm w-100 w-lg-auto" onClick={closeMenu}>
+                                    👤 הפרופיל שלי
+                                </Link>
+
                                 <Link to="/orders" className="btn btn-outline-light btn-sm w-100 w-lg-auto" onClick={closeMenu}>
-                                    ההזמנות שלי
+                                    הזמנות
                                 </Link>
 
                                 <Link to="/cart" className="btn btn-primary btn-sm position-relative w-100 w-lg-auto" onClick={closeMenu}>

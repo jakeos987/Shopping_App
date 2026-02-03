@@ -21,6 +21,7 @@ export default function CartPage() {
             removeFromCart(productId, Math.abs(diff)); 
         }
     };
+
     const calculateTotal = () => {
         if (!cart?.cartItems) return 0;
         return cart.cartItems.reduce((total, item) => {
@@ -55,20 +56,21 @@ export default function CartPage() {
                                     
                                     <div className="d-flex align-items-center" style={{ width: '40%' }}>
                                         <img
-                                            src={item.product?.imageUrl ? String(item.product.imageUrl) : 'https://via.placeholder.com/60'}
+                                            src={item.product?.imageUrl ? String(item.product?.imageUrl) : 'https://via.placeholder.com/60'}
                                             alt={item.product?.name}
                                             className="rounded me-3"
                                             style={{ width: "60px", height: "60px", objectFit: "cover" }}
                                         />
                                         <div>
-                                            <h6 className="mb-0">{item.product?.name}</h6>
-                                            <small className="text-muted">{item.product?.category}</small>
+                                            <h6 className="mb-0">{item.product?.name || "מוצר לא זמין"}</h6>
+                                            {/* ⭐ SAFETY FIX: Added ?. before name */}
+                                            <small className="text-muted">{item.product?.category?.name || "כללי"}</small>
                                         </div>
                                     </div>
                                     <div className="d-flex align-items-center">
                                         <button 
                                             className="btn btn-outline-secondary btn-sm"
-                                            onClick={() => removeFromCart(item.product.productId, 1)}
+                                            onClick={() => item.product?.productId && removeFromCart(item.product.productId, 1)}
                                         >-</button>
                                         
                                         <input 
@@ -76,12 +78,12 @@ export default function CartPage() {
                                             className="form-control form-control-sm text-center mx-2"
                                             style={{ width: '60px' }}
                                             value={item.quantity}
-                                            onChange={(e) => handleQuantityChange(item.product.productId, item.quantity, e.target.value)}
+                                            onChange={(e) => item.product?.productId && handleQuantityChange(item.product.productId, item.quantity, e.target.value)}
                                         />
 
                                         <button 
                                             className="btn btn-outline-secondary btn-sm"
-                                            onClick={() => addToCart(item.product.productId, 1)}
+                                            onClick={() => item.product?.productId && addToCart(item.product.productId, 1)}
                                         >+</button>
                                     </div>
                                     <div className="fw-bold" style={{ width: '15%', textAlign: 'end' }}>
@@ -90,7 +92,7 @@ export default function CartPage() {
 
                                     <button 
                                         className="btn btn-link text-danger p-0 ms-3"
-                                        onClick={() => removeFromCart(item.product.productId, item.quantity)}
+                                        onClick={() => item.product?.productId && removeFromCart(item.product.productId, item.quantity)}
                                     >
                                         🗑️
                                     </button>

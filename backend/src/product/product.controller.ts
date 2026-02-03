@@ -4,13 +4,14 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UseInterceptors, ClassSerializerInterceptor  } from '@nestjs/common';
-import { ProductCategory } from './entities/product.entity';
 import { Role } from '../users/entities/user.entity';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator'
 import { ProductFilterDto } from './dto/product-filter.dto';
 import { ParseIntPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { createCategoryDto } from './dto/create-category.dto';
+
 
 
 @UseGuards(JwtAuthGuard,RolesGuard)
@@ -19,7 +20,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @UseInterceptors(FileInterceptor('image'))
   @Post()
@@ -27,19 +27,26 @@ export class ProductController {
     console.log('🔍 Controller Check - File object:', file);
     return this.productService.create(createProductDto, file);
   }
+    @Roles(Role.admin)
+    @Post('category')
+  createCategory(@Body() createCategory: createCategoryDto){
+    return this.productService.createCategory(createCategory)
+  }
+  @Get('categories')
+getAllCategories() {
+    return this.productService.findAllCategories();
+}
+
 @Get('filter')
   @UsePipes(new ValidationPipe({transform: true, whitelist: true}))
   async filter(@Query()filterDto: ProductFilterDto){
     return this.productService.findWithFilter(filterDto)
   }
 
-
-
   @Get()
   findAll() {
     return this.productService.findAll();
   }
-//  @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Get('deleted')
   findDeleted(){
@@ -52,7 +59,6 @@ export class ProductController {
   }
 
 
-  // @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @UseInterceptors(FileInterceptor('image'))
   @Patch(':id')
@@ -60,13 +66,11 @@ export class ProductController {
     return this.productService.update(+id, updateProductDto, file);
   }
   
-  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }
-  // @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(Role.admin)
   @Patch('restore/:id')
   restore(@Param('id',ParseIntPipe)id:number){

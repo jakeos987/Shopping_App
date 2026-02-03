@@ -1,24 +1,19 @@
-export type ProductCategory =
-    | 'ELECTRONICS'
-    | 'CLOTHING'
-    | 'BOOKS'
-    | 'BOARD_GAMES'
-    | 'BEVERAGES'
-    | 'GAMING';
-
 export interface Product{
     productId:number
     name:string
-    category:ProductCategory
+    category:Category
     price:number
     stockQuantity:number
     deletedAt:Date
     imageUrl?:string
-    isActive:boolean
 }
 export interface ProductFilter{
-    category?:ProductCategory
+    category?:Category
     minPrice?:number
     maxPrice?:number
     name?:string
+}
+export interface Category{
+    categoryId: number
+    name: string
 }

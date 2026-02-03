@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product, ProductCategory } from './entities/product.entity';
@@ -6,8 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, LessThanOrEqual, MoreThanOrEqual, Between, FindOptionsWhere } from 'typeorm'; // הוספתי FindOptionsWhere
 import { CartItem } from '../cart/entities/cartItem.entity';
 import { ProductFilterDto } from './dto/product-filter.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { IsNull, Not } from 'typeorm'
+import { Category } from './entities/category.entity';
+import { createCategoryDto } from './dto/create-category.dto';
 
 @Injectable()
 export class ProductService {
@@ -17,13 +19,33 @@ export class ProductService {
 
         @InjectRepository(CartItem)
         private readonly cartItemRepo: Repository<CartItem>,
-        private readonly cloudi: CloudinaryService
+
+        private readonly cloudi: CloudinaryService,
+
+        @InjectRepository(Category)
+        private readonly categoryRepo: Repository<Category>,
     ) { }
+
+    async createCategory(categoryDto: createCategoryDto){
+      const existingCAte = await this.categoryRepo.findOneBy({name: categoryDto.name})
+      if(existingCAte) throw new ConflictException(`הקטגוריה כבר קיימת במערכת`)
+        const newCategory = this.categoryRepo.create(categoryDto)
+      return await this.categoryRepo.save(newCategory)
+    }
+async findAllCategories() {
+    return await this.categoryRepo.find();
+}
 
     // ... create נשאר אותו דבר ...
     async create(createProductDto: CreateProductDto, file?: Express.Multer.File) {
-        let finalImageUrl: string | null = null;
+        // 2. שליפת הקטגוריה מה-DB לפי ה-ID
+        const category = await this.categoryRepo.findOneBy({ categoryId: createProductDto.categoryId });
+        
+        if (!category) {
+            throw new NotFoundException('Category not found');
+        }
 
+        let finalImageUrl: string | null = null;
         if (file) {
             try {
                 const uploadRes = await this.cloudi.uploadImage(file);
@@ -33,22 +55,26 @@ export class ProductService {
             }
         }
 
+        // 3. יצירת המוצר עם אובייקט הקטגוריה
         const newProduct = this.productRepo.create({
             ...createProductDto,
             imageUrl: finalImageUrl,
             price: Number(createProductDto.price),
             stockQuantity: Number(createProductDto.stockQuantity),
+            category: category // הכנסת האובייקט השלם לתוך ה-Relation
         });
 
         return await this.productRepo.save(newProduct);
     }
 
     async findAll() {
-        return this.productRepo.find();
+        return this.productRepo.find({
+          relations: ['category']
+        });
     }
 
     async findOne(id: number) {
-        const product = await this.productRepo.findOne({ where: { productId: id } });
+        const product = await this.productRepo.findOne({ where: { productId: id }, relations: ['category'] });
         if (!product) {
             throw new NotFoundException(`Product with ID ${id} not found`);
         }
@@ -57,23 +83,20 @@ export class ProductService {
 
     // --- ⭐ התיקון של פונקציית הסינון ⭐ ---
     async findWithFilter(filterDto: ProductFilterDto) {
-        const { search, category, minPrice, maxPrice } = filterDto;
+        const { search, categoryId, minPrice, maxPrice } = filterDto; // שים לב: categoryId ב-FilterDto
         
-        // אנחנו בונים אובייקט אחד במקום מערך כדי ליצור לוגיקת AND
         const where: FindOptionsWhere<Product> = {};
 
-        // 1. סינון לפי שם (חיפוש חופשי)
         if (search) {
             where.name = ILike(`%${search}%`);
         }
 
-        // 2. סינון לפי קטגוריה
-        if (category) {
-            where.category = category;
+        // תיקון הסינון לפי קטגוריה (Relation)
+        if (categoryId) {
+            where.category = { categoryId: Number(categoryId) };
         }
 
-        // 3. סינון לפי מחיר
-        // חשוב לוודא שהמספרים הם באמת מספרים (לפעמים מגיעים כסטרינג מה-Query)
+        // ... המשך לוגיקת מחירים אותו דבר ...
         const min = minPrice ? Number(minPrice) : undefined;
         const max = maxPrice ? Number(maxPrice) : undefined;
 
@@ -85,22 +108,23 @@ export class ProductService {
             where.price = LessThanOrEqual(max);
         }
 
-        // ביצוע השאילתה
-        const products = await this.productRepo.find({
-            where: where,       // אם האובייקט ריק, הוא יחזיר את הכל (וזה תקין)
-            order: { price: 'ASC' } // מיון ברירת מחדל לפי מחיר עולה
+        return await this.productRepo.find({
+            where: where,
+            order: { price: 'ASC' },
+            relations: ['category'] // חשוב! כדי לקבל את פרטי הקטגוריה בתוצאה
         });
-
-        // החזרה של מערך ריק עדיפה על החזרת אובייקט עם הודעה
-        // כי הפרונטאנד מצפה למערך כדי לעשות .map
-        return products;
     }
-
     // ... שאר הפונקציות נשארות אותו דבר ...
 
     async update(id: number, updateProductDto: UpdateProductDto, file?: Express.Multer.File) {
         const product = await this.productRepo.findOneBy({ productId: id });
         if (!product) throw new NotFoundException(`Product with ID ${id} not found`);
+        if (updateProductDto.categoryId) {
+            const newCategory = await this.categoryRepo.findOneBy({ categoryId: updateProductDto.categoryId });
+            if (newCategory) {
+                product.category = newCategory;
+            }
+        }
 
         if (file) {
             try {
@@ -135,7 +159,9 @@ export class ProductService {
     findDeleted() {
         return this.productRepo.find({
             withDeleted: true,
-            where: { deletedAt: Not(IsNull()) }
+            where: { deletedAt: Not(IsNull()) },
+            relations: ['category']
+            
         });
     }
 }

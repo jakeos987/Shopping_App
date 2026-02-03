@@ -1,21 +1,30 @@
 import {api } from './api';
-import type { Product } from '../features/products/types';
+import type { Category, Product } from '../features/products/types';
 import type { ProductFilter } from '../features/products/types';
-
 
 export const productService={
     async getAll(){
         const res = await api.get<Product[]>('/product');
         return res.data;
     },
+    async getCategories(){
+        const res = await api.get<Category[]>('/product/categories')
+        return res.data
+    },
     async getOne(id:number){
         const res = await api.get<Product>(`/product/${id}`)
         return res.data
     },
+
+
     async getFilter(filter:ProductFilter){
         const res = await api.get<Product[]>('/product/filter',{
             params:filter
         })
+        return res.data
+    },
+    async createCategory(){
+        const res = await api.post('/product/category')
         return res.data
     },
     create: async (formData: FormData) => {

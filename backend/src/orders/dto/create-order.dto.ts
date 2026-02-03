@@ -1,4 +1,15 @@
+import { IsNotEmpty, IsString } from 'class-validator';
 
+export class CreateOrderDto {
+    @IsNotEmpty()
+    @IsString()
+    shippingAddress: string;
 
+    @IsNotEmpty()
+    @IsString()
+    city: string;
 
-export class CreateOrderDto {}
+    @IsNotEmpty()
+    @IsString()
+    phone: string;
+}
