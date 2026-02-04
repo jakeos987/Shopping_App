@@ -24,7 +24,6 @@ export class ProductController {
   @UseInterceptors(FileInterceptor('image'))
   @Post()
   create(@Body() createProductDto: CreateProductDto, @UploadedFile()file: Express.Multer.File) {
-    console.log('🔍 Controller Check - File object:', file);
     return this.productService.create(createProductDto, file);
   }
     @Roles(Role.admin)

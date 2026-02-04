@@ -29,4 +29,11 @@ export class OrdersController {
   updateStatus(@Param('id') id: string, @Body('status') status: OrderStatus) {
     return this.ordersService.updateStatus(+id, status)
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Get('user/:userId')
+  findAllByUser(@Param('userId') userId: string) {
+    return this.ordersService.findAll(+userId)
+  }
 }

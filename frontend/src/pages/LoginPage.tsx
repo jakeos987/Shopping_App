@@ -15,15 +15,12 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
-        console.log("מנסה להתחבר...", { email, password })
         try {
             const data = await AuthService.login({ email, password })
-            console.log("Full Login Response:", data);
-            console.log("User from Login Response:", data.user);
             setAuth(data.user, data.token);
             navigate('/')
         } catch (err: any) {
-            console.log(err)
+            console.error(err)
             setError('אמייל או סיסמא שגויים')
         }
     }

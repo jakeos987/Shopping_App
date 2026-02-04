@@ -32,15 +32,6 @@ export const NavBar = () => {
     }
 
     const cartCount = cart?.cartItems?.length || 0;
-
-    // DEBUG: Log the user object to see the role
-    console.log('Current User in NavBar:', user);
-    console.log('Role Check:', {
-        role: user?.role,
-        isAdminEnum: user?.role === UserRole.ADMIN,
-        isAdminString: (user?.role as string) === 'admin'
-    });
-
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div className="container">

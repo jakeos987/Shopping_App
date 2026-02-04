@@ -9,16 +9,16 @@ export enum OrderStatus {
 }
 
 export interface OrderItem {
-    orderItemId: number; // או id, תלוי בשרת. בדרך כלל ב-NestJS זה id או orderItemId
+    orderItemId: number; 
     quantity: number;
-    price: number;       // ⭐ תיקון: שונה מ-priceAtPurchase ל-price
-    product?: Product;   // המוצר המלא (אם ה-relation נטען)
-    productName?: string; // גיבוי אם אין אובייקט מוצר מלא
+    price: number;       
+    product?: Product;   
+    productName?: string; 
 }
 
 export interface Order {
     orderId: number;
-    orderDate: string;   // ⭐ תיקון: שונה מ-createdAt ל-orderDate
+    orderDate: string;  
     totalAmount: number;
     status: OrderStatus;
     
@@ -27,6 +27,5 @@ export interface Order {
     city: string;
     phone: string;
     
-    orderItems: OrderItem[]; // ⭐ תיקון: שונה מ-items ל-orderItems
+    orderItems: OrderItem[]; 
 }
-//////////////////////////////////////////////////////////////////////////////

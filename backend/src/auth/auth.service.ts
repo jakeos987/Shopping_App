@@ -11,9 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) { }
   async validateUser(email: string, pass: string) {
-    console.log(`[DEBUG] validateUser called for: ${email}`);
     const user = await this.userService.findOneByEmail(email);
-    console.log(`[DEBUG] User found in DB:`, { id: user?.id, role: user?.role, email: user?.email });
 
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user
@@ -22,7 +20,6 @@ export class AuthService {
     return null
   }
   async login(user: any) {
-    console.log(`[DEBUG] login called with user role: ${user.role}`);
     const payload = { email: user.email, sub: user.id, role: user.role }
     return {
       access_token: this.jwtService.sign(payload),

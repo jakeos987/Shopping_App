@@ -39,7 +39,7 @@ export default function RegisterPage(){
             navigate('/login')
         } 
     }catch(err:any){
-        console.log(err)
+        console.error(err)
         setError(err.response.data.message || 'שגיאה בהרשמה תנסה עוד פעם')
     }
     }
