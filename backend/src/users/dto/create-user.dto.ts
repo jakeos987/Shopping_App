@@ -20,6 +20,10 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsEnum(Role)
-    role: Role
+    role?: Role
+
+    @IsOptional()
+    @IsString()
+    picture?: string
 
 }

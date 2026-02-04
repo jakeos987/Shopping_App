@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -41,5 +42,21 @@ export class AuthService {
         role: newUser.role
       }
     }
+  }
+  async validateGoogle(googleUser: any){
+    const {email, firstName, lastName, picture, accessToken } = googleUser
+    let user = await this.userService.findOneByEmail(email)
+    if(!user){
+      const randomPassword = uuidv4()
+      const newUserDto:CreateUserDto = {
+        email:email,
+        firstName:firstName,
+        lastName:lastName,
+        picture:picture,
+        password:randomPassword
+      }
+      user = await this.userService.create(newUserDto)
+    }
+    return this.login(user)
   }
 }

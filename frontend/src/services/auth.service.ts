@@ -1,16 +1,7 @@
 import { api } from './api';
 import {type AuthResponse } from '../features/auth/types';
+import { type loginDto, type registerDto } from '../features/auth/types';
 
-interface loginDto{
-    email:string
-    password:string
-}
-interface registerDto{
-    email:string
-    password:string
-    firstName:string
-    lastName:string
-}
 export const AuthService={
     async register(data:registerDto){
         const res = await api.post<AuthResponse>('/auth/register',data)
