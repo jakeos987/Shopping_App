@@ -10,6 +10,7 @@ export interface User{
     createdAt:string
     orders?:Order[]
     cart?:Cart
+    picture?:string
 }
 export enum UserRole  {
   ADMIN = 'ADMIN',
@@ -28,4 +29,8 @@ export interface UpdateUserDTO{
     firstName?:string
     lastName?:string
     role?:UserRole
+}
+export interface AuthResponse {
+    user: User;
+    token: string;
 }

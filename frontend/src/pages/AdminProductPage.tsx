@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { productService } from "../services/ProductService"; 
+import { productService } from "../services/ProductService";
 import { type Product } from "../features/products/types";
 import toast from "react-hot-toast";
 import { type Category } from "../features/products/types";
 
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
-    
+
     // מצב סל מחזור
     const [isTrashMode, setIsTrashMode] = useState(false);
 
@@ -17,7 +17,7 @@ export default function AdminProductsPage() {
     // --- State לניהול המודלים ---
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    
+
     // --- נתונים לטפסים ---
     const [editingId, setEditingId] = useState<number | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -25,6 +25,7 @@ export default function AdminProductsPage() {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
     const [stock, setStock] = useState("");
+    const [description, setDescription] = useState("");
     // מחקתי את const [category, setCategory] כי אנחנו משתמשים ב-categoryId
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -51,14 +52,14 @@ export default function AdminProductsPage() {
         try {
             let data;
             if (isTrashMode) {
-                data = await productService.getDeleted(); 
+                data = await productService.getDeleted();
             } else {
                 data = await productService.getAll();
             }
-            setProducts(data); 
+            setProducts(data);
         } catch (error) {
             console.error(error);
-            if(isTrashMode) setProducts([]); 
+            if (isTrashMode) setProducts([]);
         }
     };
 
@@ -80,19 +81,20 @@ export default function AdminProductsPage() {
         setShowDeleteModal(false);
         setEditingId(null);
         setDeleteId(null);
-        
+
         setName("");
         setPrice("");
         setStock("");
+        setDescription("");
         setCategoryId(0); // ⭐ מאפסים את המספר
         setSelectedFile(null);
-        
+
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-        if(fileInput) fileInput.value = "";
+        if (fileInput) fileInput.value = "";
     };
 
     const openCreateModal = () => {
-        closeModals(); 
+        closeModals();
         setShowEditModal(true);
     };
 
@@ -103,11 +105,12 @@ export default function AdminProductsPage() {
         setName(p.name);
         setPrice(p.price.toString());
         setStock(p.stockQuantity.toString());
-        
+        setDescription(p.description || "");
+
         // כאן אנחנו לוקחים את ה-ID של הקטגוריה מתוך המוצר
         // (ב-Product Entity יש לנו אובייקט category שיש לו id)
         if (p.category && p.category.categoryId) {
-            setCategoryId(p.category.categoryId); 
+            setCategoryId(p.category.categoryId);
         } else {
             setCategoryId(0);
         }
@@ -128,7 +131,8 @@ export default function AdminProductsPage() {
         formData.append('name', name);
         formData.append('price', price);
         formData.append('stockQuantity', stock);
-        
+        formData.append('description', description);
+
         // שולחים את המספר, לא את השם!
         formData.append('categoryId', categoryId.toString());
 
@@ -144,7 +148,7 @@ export default function AdminProductsPage() {
                 await productService.create(formData);
                 toast.success("המוצר נוצר בהצלחה! 🎉");
             }
-            
+
             closeModals();
             loadProducts();
         } catch (error) {
@@ -166,14 +170,29 @@ export default function AdminProductsPage() {
         }
     };
 
+    const handleAddCategory = async () => {
+        const newCategoryName = window.prompt("הזן שם לקטגוריה החדשה:");
+        if (!newCategoryName) return;
+
+        try {
+            const newCategory = await productService.createCategory({ name: newCategoryName });
+            setCategories([...categories, newCategory]);
+            setCategoryId(newCategory.categoryId);
+            toast.success("קטגוריה נוספה בהצלחה!");
+        } catch (error) {
+            console.error(error);
+            toast.error("שגיאה בהוספת קטגוריה");
+        }
+    };
+
     return (
         <div className="container mt-5">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2>{isTrashMode ? "סל מחזור 🗑️" : "ניהול מוצרים 🍎"}</h2>
-                
+
                 <div>
-                    <button 
-                        className={`btn ${isTrashMode ? 'btn-outline-secondary' : 'btn-warning'} me-2`} 
+                    <button
+                        className={`btn ${isTrashMode ? 'btn-outline-secondary' : 'btn-warning'} me-2`}
                         onClick={() => setIsTrashMode(!isTrashMode)}
                     >
                         {isTrashMode ? "חזור למוצרים פעילים 📋" : "הצג מוצרים מחוקים 🗑️"}
@@ -212,9 +231,9 @@ export default function AdminProductsPage() {
                             <tr key={p.productId} className={isTrashMode ? "table-secondary" : ""}>
                                 <td>
                                     {p.imageUrl ? (
-                                        <img src={p.imageUrl} alt="" style={{width: 50, height: 50, objectFit: 'cover'}} className="rounded" />
+                                        <img src={p.imageUrl} alt="" style={{ width: 50, height: 50, objectFit: 'cover' }} className="rounded" />
                                     ) : (
-                                        <div className="bg-light d-flex align-items-center justify-content-center rounded" style={{width:50, height:50}}>📷</div>
+                                        <div className="bg-light d-flex align-items-center justify-content-center rounded" style={{ width: 50, height: 50 }}>📷</div>
                                     )}
                                 </td>
                                 <td>{p.name}</td>
@@ -246,7 +265,7 @@ export default function AdminProductsPage() {
             {/* --- מודל עריכה/יצירה --- */}
             {showEditModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                     <div className="modal-dialog">
+                    <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">{editingId ? 'עריכת מוצר' : 'מוצר חדש'}</h5>
@@ -257,6 +276,10 @@ export default function AdminProductsPage() {
                                     <div className="mb-3">
                                         <label className="form-label">שם המוצר</label>
                                         <input type="text" className="form-control" required value={name} onChange={e => setName(e.target.value)} />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label">תיאור</label>
+                                        <textarea className="form-control" rows={3} value={description} onChange={e => setDescription(e.target.value)} />
                                     </div>
                                     <div className="row">
                                         <div className="col mb-3">
@@ -272,24 +295,29 @@ export default function AdminProductsPage() {
                                     {/* ⭐ שינוי 5: החלפת Input ב-Select דינמי */}
                                     <div className="mb-3">
                                         <label className="form-label">קטגוריה</label>
-                                        <select 
-                                            className="form-select" 
-                                            value={categoryId} 
-                                            onChange={e => setCategoryId(Number(e.target.value))}
-                                            required
-                                        >
-                                            <option value={0}>בחר קטגוריה...</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat.categoryId} value={cat.categoryId}>
-                                                    {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className="input-group">
+                                            <select
+                                                className="form-select"
+                                                value={categoryId}
+                                                onChange={e => setCategoryId(Number(e.target.value))}
+                                                required
+                                            >
+                                                <option value={0}>בחר קטגוריה...</option>
+                                                {categories.map((cat) => (
+                                                    <option key={cat.categoryId} value={cat.categoryId}>
+                                                        {cat.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button type="button" className="btn btn-outline-secondary" onClick={handleAddCategory}>
+                                                + הוסף
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="mb-3">
                                         <label className="form-label">תמונה</label>
-                                        <input id="fileInput" type="file" className="form-control" accept="image/*" 
+                                        <input id="fileInput" type="file" className="form-control" accept="image/*"
                                             onChange={e => e.target.files && setSelectedFile(e.target.files[0])} />
                                     </div>
                                     <div className="modal-footer px-0 pb-0">
