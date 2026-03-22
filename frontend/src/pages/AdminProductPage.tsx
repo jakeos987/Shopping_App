@@ -7,18 +7,17 @@ import { type Category } from "../features/products/types";
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
 
-    // מצב סל מחזור
+    // סל מיחזור
     const [isTrashMode, setIsTrashMode] = useState(false);
 
-    // ⭐ שינוי 1: סטייט לקטגוריות
     const [categories, setCategories] = useState<Category[]>([]);
-    const [categoryId, setCategoryId] = useState<number>(0); // עובדים עם מספר
+    const [categoryId, setCategoryId] = useState<number>(0); 
 
-    // --- State לניהול המודלים ---
+    //  State לניהול המודלים 
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // --- נתונים לטפסים ---
+    // נתונים לטפסים 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -26,10 +25,9 @@ export default function AdminProductsPage() {
     const [price, setPrice] = useState("");
     const [stock, setStock] = useState("");
     const [description, setDescription] = useState("");
-    // מחקתי את const [category, setCategory] כי אנחנו משתמשים ב-categoryId
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    // ⭐ שינוי 2: טעינת הקטגוריות מהשרת כשהדף עולה
+    // טעינת הקטגוריות מהשרת כשהדף עולה
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -75,7 +73,7 @@ export default function AdminProductsPage() {
         }
     };
 
-    // --- איפוס ---
+    // איפוס
     const closeModals = () => {
         setShowEditModal(false);
         setShowDeleteModal(false);
@@ -86,7 +84,7 @@ export default function AdminProductsPage() {
         setPrice("");
         setStock("");
         setDescription("");
-        setCategoryId(0); // ⭐ מאפסים את המספר
+        setCategoryId(0); // מאפסים את המספר
         setSelectedFile(null);
 
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -98,7 +96,7 @@ export default function AdminProductsPage() {
         setShowEditModal(true);
     };
 
-    // --- ⭐ שינוי 3: פתיחת עריכה עם זיהוי הקטגוריה ---
+    // פתיחת עריכה עם זיהוי הקטגוריה
     const openEditModal = (p: Product) => {
         closeModals();
         setEditingId(p.productId);
@@ -107,8 +105,8 @@ export default function AdminProductsPage() {
         setStock(p.stockQuantity.toString());
         setDescription(p.description || "");
 
-        // כאן אנחנו לוקחים את ה-ID של הקטגוריה מתוך המוצר
-        // (ב-Product Entity יש לנו אובייקט category שיש לו id)
+        // idכאן אנחנו לוקחים את ה
+        //  של הקטגוריה מתוך המוצר
         if (p.category && p.category.categoryId) {
             setCategoryId(p.category.categoryId);
         } else {
@@ -123,7 +121,7 @@ export default function AdminProductsPage() {
         setShowDeleteModal(true);
     };
 
-    // --- ⭐ שינוי 4: שליחת ה-ID לשרת ---
+    //  ש שליחת ה-ID לשרת
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -133,7 +131,7 @@ export default function AdminProductsPage() {
         formData.append('stockQuantity', stock);
         formData.append('description', description);
 
-        // שולחים את המספר, לא את השם!
+        // שולחים את המספר, לא את השם
         formData.append('categoryId', categoryId.toString());
 
         if (selectedFile) {
@@ -206,7 +204,7 @@ export default function AdminProductsPage() {
                 </div>
             </div>
 
-            {/* --- הטבלה --- */}
+            {/* הטבלה */}
             <div className="table-responsive shadow bg-white rounded">
                 <table className="table table-hover align-middle mb-0">
                     <thead className="table-dark">
@@ -237,7 +235,7 @@ export default function AdminProductsPage() {
                                     )}
                                 </td>
                                 <td>{p.name}</td>
-                                <td>{p.category?.name || "ללא"}</td> {/* מציג את שם הקטגוריה */}
+                                <td>{p.category?.name || "ללא"}</td> 
                                 <td>₪{p.price}</td>
                                 <td>{p.stockQuantity}</td>
                                 <td>
@@ -262,7 +260,7 @@ export default function AdminProductsPage() {
                 </table>
             </div>
 
-            {/* --- מודל עריכה/יצירה --- */}
+            {/* מודל עריכה/יצירה  */}
             {showEditModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="modal-dialog">
@@ -292,7 +290,6 @@ export default function AdminProductsPage() {
                                         </div>
                                     </div>
 
-                                    {/* ⭐ שינוי 5: החלפת Input ב-Select דינמי */}
                                     <div className="mb-3">
                                         <label className="form-label">קטגוריה</label>
                                         <div className="input-group">
@@ -340,7 +337,7 @@ export default function AdminProductsPage() {
                                 <button type="button" className="btn-close" onClick={closeModals}></button>
                             </div>
                             <div className="modal-body">
-                                <p>האם אתה בטוח שברצונך למחוק את המוצר הזה?</p>
+                                <p>?האם אתה בטוח שברצונך למחוק את המוצר הזה</p>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={closeModals}>ביטול</button>

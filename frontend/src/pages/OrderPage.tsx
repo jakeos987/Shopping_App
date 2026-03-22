@@ -16,7 +16,7 @@ export default function OrderPage() {
             const data = await orderService.getAll();
             
             if (Array.isArray(data)) {
-                // ⭐ תיקון: מיון לפי orderDate
+                //  מיון לפי תאריך
                 const sorted = data.sort((a, b) => 
                     new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
                 );
@@ -32,7 +32,6 @@ export default function OrderPage() {
     };
 
     if (loading) return <div className="text-center mt-5">...טוען הזמנות ⏳</div>;
-
     if (!orders || orders.length === 0) {
         return (
             <div className="container mt-5 text-center">
@@ -52,7 +51,7 @@ export default function OrderPage() {
                             <div className="card-header bg-white d-flex justify-content-between align-items-center">
                                 <div>
                                     <span className="fw-bold fs-5">
-                                        {/* ⭐ תיקון: שימוש ב-orderDate */}
+
                                         {order.orderDate ? new Date(order.orderDate).toLocaleDateString('he-IL') : 'תאריך לא זמין'}
                                     </span>
                                 </div>
@@ -64,7 +63,7 @@ export default function OrderPage() {
                                 <div className="table-responsive">
                                     <table className="table table-borderless mb-0">
                                         <tbody>
-                                            {/* ⭐ תיקון: שימוש ב-orderItems והגנה מפני קריסה */}
+
                                             {order.orderItems && order.orderItems.length > 0 ? (
                                                 order.orderItems.map((item, index) => (
                                                     <tr key={item.orderItemId || index}>
@@ -79,7 +78,7 @@ export default function OrderPage() {
                                                         <td>{item.product?.name || item.productName || 'מוצר'}</td>
                                                         <td>x{item.quantity}</td>
                                                         <td className="text-end">
-                                                            {/* ⭐ תיקון: שימוש ב-item.price */}
+
                                                             ₪{(Number(item.price) * item.quantity).toFixed(2)}
                                                         </td>
                                                     </tr>

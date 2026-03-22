@@ -32,19 +32,14 @@ export class ProductService {
         const newCategory = this.categoryRepo.create(categoryDto)
       return await this.categoryRepo.save(newCategory)
     }
-async findAllCategories() {
-    return await this.categoryRepo.find();
-}
-
-    // ... create נשאר אותו דבר ...
+    async findAllCategories() {
+        return await this.categoryRepo.find();
+    }
     async create(createProductDto: CreateProductDto, file?: Express.Multer.File) {
-        // 2. שליפת הקטגוריה מה-DB לפי ה-ID
         const category = await this.categoryRepo.findOneBy({ categoryId: createProductDto.categoryId });
-        
         if (!category) {
             throw new NotFoundException('Category not found');
         }
-
         let finalImageUrl: string | null = null;
         if (file) {
             try {
@@ -54,14 +49,12 @@ async findAllCategories() {
                 console.error("❌ [Cloudinary] Upload Failed:", error);
             }
         }
-
-        // 3. יצירת המוצר עם אובייקט הקטגוריה
         const newProduct = this.productRepo.create({
             ...createProductDto,
             imageUrl: finalImageUrl,
             price: Number(createProductDto.price),
             stockQuantity: Number(createProductDto.stockQuantity),
-            category: category // הכנסת האובייקט השלם לתוך ה-Relation
+            category: category
         });
 
         return await this.productRepo.save(newProduct);

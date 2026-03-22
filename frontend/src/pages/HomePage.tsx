@@ -80,12 +80,7 @@ export default function HomePage() {
 
     return (
         <div className="container-fluid mt-4 px-4 position-relative">
-
-            {/* ⭐ שינוי: איחדתי את הכותרת והכפתור לשורה אחת */}
-            {/* justify-content-between דואג שהכותרת תהיה מימין והכפתור משמאל */}
             <div className="d-flex justify-content-between align-items-center mb-4">
-
-                {/* צד ימין: כותרת וברכה */}
                 <div>
                     <h1 className="fw-bold">החנות שלנו</h1>
                     {user ? (
@@ -97,11 +92,11 @@ export default function HomePage() {
                     )}
                 </div>
 
-                {/* צד שמאל: כפתור הסינון */}
+                {/* כפתור הסינון */}
                 <button
                     className="btn btn-dark d-flex align-items-center gap-2 shadow-sm"
                     onClick={() => setShowSidebar(true)}
-                    style={{ height: 'fit-content' }} // שלא ימתח לגובה
+                    style={{ height: 'fit-content' }} 
                 >
                     <span>סינון וחיפוש</span>
                     <span>🔍</span>
@@ -109,7 +104,7 @@ export default function HomePage() {
             </div>
 
 
-            {/* --- תפריט צד (Offcanvas) --- */}
+            {/* תפריט צד  */}
             {showSidebar && (
                 <div
                     className="position-fixed top-0 start-0 w-100 h-100 bg-dark"

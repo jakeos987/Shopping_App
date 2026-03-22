@@ -12,8 +12,6 @@ import { ParseIntPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createCategoryDto } from './dto/create-category.dto';
 
-
-
 @Controller('product')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProductController {

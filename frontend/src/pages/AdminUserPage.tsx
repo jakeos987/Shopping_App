@@ -73,9 +73,8 @@ export default function AdminUserPage() {
         setIsModalOpen(true);
         setLoadingOrders(true);
         try {
-            // Note: Ensure currentUser.id is defined if needed elsewhere, but here we pass user.id to API
             const orders = await orderService.getOrdersByUser(user.id);
-            // Sort by date desc
+
             const sorted = orders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
             setSelectedUserOrders(sorted);
         } catch (error) {

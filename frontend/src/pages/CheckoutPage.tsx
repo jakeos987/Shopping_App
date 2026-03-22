@@ -7,8 +7,6 @@ export default function CheckoutPage() {
     const { cart, fetchCart } = useCartStore();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
-
-    // Form state
     const [shippingAddress, setShippingAddress] = useState("");
     const [city, setCity] = useState("");
     const [phone, setPhone] = useState("");
@@ -97,12 +95,11 @@ export default function CheckoutPage() {
                                 />
                             </div>
                             <div className="col-12">
-                                <label className="form-label">מספר אשראי (דמה)</label>
+                                <label className="form-label">מספר אשראי </label>
                                 <input type="text" className="form-control" placeholder="0000 0000 0000 0000" />
                             </div>
                         </div>
 
-                        {/* Move Submit button inside form to trigger validation */}
                         <div className="mt-4">
                             <button
                                 type="submit"
@@ -112,7 +109,7 @@ export default function CheckoutPage() {
                                 {isProcessing ? (
                                     <span>
                                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                        מעבד הזמנה...
+                                        ...מעבד הזמנה
                                     </span>
                                 ) : "בצע תשלום וסיים הזמנה"}
                             </button>
@@ -140,8 +137,6 @@ export default function CheckoutPage() {
                             <span className="fw-bold">סה"כ לתשלום:</span>
                             <span className="fw-bold text-primary fs-5">₪{total.toFixed(2)}</span>
                         </div>
-
-                        {/* Button removed from here, moved into form */}
                     </div>
                 </div>
             </div>
