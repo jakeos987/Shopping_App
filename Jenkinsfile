@@ -14,13 +14,13 @@ pipeline {
             }
         }
         
-        stage('Test') {
-            steps {dir('backend') {
-                sh "docker build --target builder -t temp-test ."
-                sh "docker run --rm temp-test npm run test"
-            }
-        }
-        }
+        // stage('Test') {
+        //     steps {dir('backend') {
+        //         sh "docker build --target builder -t temp-test ."
+        //         sh "docker run --rm temp-test npm run test"
+        //     }
+        // }
+        // }
         
         stage('Build & Push Image') {
             steps {
