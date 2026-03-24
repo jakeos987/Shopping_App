@@ -23,7 +23,7 @@ pipeline {
         
         stage('Build & Push Image') {
             steps {
-                sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+                sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ./backend/"
                 sh "docker tag ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
                 sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
                 sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
@@ -64,8 +64,8 @@ pipeline {
         failure {
             echo "⚠️ Pipeline failed! Initiating automatic Rollback..."
             withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
-                sh "kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/${IMAGE_NAME}"
-                sh "kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${IMAGE_NAME}"
+                sh 'kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/${IMAGE_NAME}'
+                sh 'kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${IMAGE_NAME}'
             }
             echo "⏪ Rollback complete. System restored."
         }
