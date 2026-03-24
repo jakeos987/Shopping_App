@@ -23,10 +23,12 @@ pipeline {
         
         stage('Build & Push Image') {
             steps {
-                sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ./backend/"
-                sh "docker tag ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
-                sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
+                dir('backend') {
+                    sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+                    sh "docker tag ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
+                    sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                    sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
+            }
             }
         }
         
