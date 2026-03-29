@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGISTRY_HOST = "localhost:5000"
         REGISTRY_K8S = "host.docker.internal:5000"
-        IMAGE_NAME = "nestjs-app"
+        IMAGE_NAME = "nestjs-app" // נשאיר את השם כדי לא לשבור את ה-YAML
     }
 
     stages {
@@ -22,14 +22,21 @@ pipeline {
         // }
         // }
         
+        // stage('Build & Push Image') {
+        //     steps {
+        //         dir('backend') {
+        //             sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+        //             sh "docker tag ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
+        //             sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
+        //             sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
+        //     }
+        //     }
+        // }
         stage('Build & Push Image') {
             steps {
-                dir('backend') {
-                    sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
-                    sh "docker tag ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
-                    sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                    sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:latest"
-            }
+                sh "docker pull nginx:alpine"
+                sh "docker tag nginx:alpine ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
             }
         }
         
