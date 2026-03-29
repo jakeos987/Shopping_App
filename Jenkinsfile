@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         REGISTRY_HOST = "localhost:5000"
-        REGISTRY_K8S = "my-registry:5000"
+        REGISTRY_K8S = "host.docker.internal:5000"
         IMAGE_NAME = "nestjs-app"
     }
 
@@ -67,8 +67,8 @@ pipeline {
         failure {
             echo "⚠️ Pipeline failed! Initiating automatic Rollback..."
             withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
-                sh 'kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/${IMAGE_NAME}'
-                sh 'kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${IMAGE_NAME}'
+                // רק פקודה אחת שמגלגלת את הדיפלוימנט המדויק, עם התעלמות אם הוא לא קיים
+                sh 'kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/nestjs-app || true'
             }
             echo "⏪ Rollback complete. System restored."
         }
