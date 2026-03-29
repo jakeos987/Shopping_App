@@ -68,7 +68,7 @@ pipeline {
             echo "⚠️ Pipeline failed! Initiating automatic Rollback..."
             withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
                 // רק פקודה אחת שמגלגלת את הדיפלוימנט המדויק, עם התעלמות אם הוא לא קיים
-                // sh 'kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/nestjs-app || true'
+                sh 'kubectl --kubeconfig=$KUBECONFIG rollout undo deployment/nestjs-app || true'
             }
             echo "⏪ Rollback complete. System restored."
         }
