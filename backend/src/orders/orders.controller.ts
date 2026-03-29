@@ -6,8 +6,8 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/roles/roles.guard';
 import { Role } from 'src/users/entities/user.entity';
-import { OrderStatus } from './entities/order.entity';
-import { Roles } from '../auth/roles/roles.decorator'
+import { OrderStatus } from 'src/orders/entities/order.entity';
+import { Roles } from 'src/auth/roles/roles.decorator'
 
 @Controller('orders')
 @UseInterceptors(ClassSerializerInterceptor)
