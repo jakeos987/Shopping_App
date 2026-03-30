@@ -33,11 +33,12 @@ pipeline {
         //     }
         // }
 
-        echo "🔍 Pulling base image and pushing to registry..."
         stage('Build & Push Image') {
+            echo "🔍 Pulling base image and pushing to registry..."
             steps {
                 sh "docker pull nginx:alpine"
                 sh "docker tag nginx:alpine ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                echo "🚀 pushing image ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}..."
                 sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
             }
         }
