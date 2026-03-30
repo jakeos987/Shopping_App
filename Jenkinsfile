@@ -34,14 +34,16 @@ pipeline {
         // }
 
         stage('Build & Push Image') {
-            steps {
-                echo "🔍 Pulling base image and pushing to registry..."
-                sh "docker pull nginx:alpine"
-                sh "docker tag nginx:alpine ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                echo "🚀 pushing image ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}..."
-                sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
-            }
-        }
+    steps {
+        echo "🔍 Building NestJS image from source..."
+        // הפקודה הזו קוראת את ה-Dockerfile בפרויקט שלך ובונה את הקונטיינר האמיתי
+        sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+        
+        echo "🚀 pushing image ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}..."
+        // הפקודה הזו דוחפת את הקונטיינר שבנינו ל-Registry
+        sh "docker push ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}"
+    }
+}
         
         stage('Deploy to K8s') {
             steps {
