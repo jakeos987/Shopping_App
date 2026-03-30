@@ -32,6 +32,8 @@ pipeline {
         //     }
         //     }
         // }
+
+        echo "🔍 Pulling base image and pushing to registry..."
         stage('Build & Push Image') {
             steps {
                 sh "docker pull nginx:alpine"
