@@ -37,7 +37,7 @@ pipeline {
     steps {
         echo "🔍 Building NestJS image from source..."
         // הפקודה הזו קוראת את ה-Dockerfile בפרויקט שלך ובונה את הקונטיינר האמיתי
-        sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+        sh "docker build -t ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER} ./backend"
         
         echo "🚀 pushing image ${REGISTRY_HOST}/${IMAGE_NAME}:${BUILD_NUMBER}..."
         // הפקודה הזו דוחפת את הקונטיינר שבנינו ל-Registry
