@@ -47,10 +47,18 @@ pipeline {
         
         stage('Deploy to K8s') {
             steps {
-                withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
+                // אנחנו מביאים גם את הקיוּב-קונפיג וגם את קובץ הסודות מתוך הכספת
+                withCredentials([
+                    file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG'),
+                    file(credentialsId: 'prod-env-file', variable: 'ENV_FILE')
+                ]) {
+                    // הפקודה הזו יוצרת את הסוד ישירות מהקובץ מבלי לשמור אותו בדיסק
+                    sh "kubectl --kubeconfig=$KUBECONFIG create secret generic nestjs-secrets --from-env-file=$ENV_FILE --dry-run=client -o yaml | kubectl --kubeconfig=$KUBECONFIG apply -f -"
+                    
+                    // שאר הפקודות שלך כרגיל:
                     sh "kubectl --kubeconfig=$KUBECONFIG apply -f k8s/"
                     sh "kubectl --kubeconfig=$KUBECONFIG set image deployment/${IMAGE_NAME} nestjs-container=${REGISTRY_K8S}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                    sh "kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${IMAGE_NAME} --timeout=90s"
+                    sh "kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${IMAGE_NAME} --timeout=180s"
                 }
             }
         }
