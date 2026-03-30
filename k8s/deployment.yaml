@@ -22,6 +22,9 @@ spec:
         # ה-Jenkins יעלה לפה את התמונה ואנחנו נמשוך אותה
         image: localhost:5000/nestjs-app:latest 
         imagePullPolicy: Always
+        env:
+        - name: SECRET_KEY
+          value: "my-super-secret-jwt-key"
         ports:
         - containerPort: 3000
         resources:
